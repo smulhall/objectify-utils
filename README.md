@@ -2,6 +2,7 @@ objectify-utils (Objectify Utilities for App Engine)
 ===========================
 
 This project contains several utility and extension classes to enhance <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a> with capabilities related large numbers and Money using Joda Money.
+<i>Note: This class is not compatible with Objectify versions prior to version 4.0a3.</i>
 
 First, download the latest <a href="https://github.com/sappenin/objectify-utils/raw/master/maven/com/sappenin/objectify/objectify-utils/1.0.0/objectify-utils-1.0.0.jar">objectify-utils-1.0.0.jar</a> and include it your application's classpath.
 
