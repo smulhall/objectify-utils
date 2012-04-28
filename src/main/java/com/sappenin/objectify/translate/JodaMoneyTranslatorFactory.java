@@ -34,7 +34,6 @@ import com.sappenin.objectify.translate.util.BigDecimalCodec;
  */
 public class JodaMoneyTranslatorFactory implements TranslatorFactory<BigMoneyProvider>
 {
-
 	@Override
 	public JodaMoneyTranslator create(final Path path, final Property property, final Type type, CreateContext ctx)
 	{
@@ -55,6 +54,7 @@ public class JodaMoneyTranslatorFactory implements TranslatorFactory<BigMoneyPro
 		}
 
 	}
+
 	/**
 	 * Translator which knows what to do with a Joda
 	 * {@link org.joda.money.BigMoneyProvider}, which is an interface

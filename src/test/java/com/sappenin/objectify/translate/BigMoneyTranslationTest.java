@@ -1,7 +1,6 @@
 package com.sappenin.objectify.translate;
 
 import java.math.BigDecimal;
-import java.util.logging.Logger;
 
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
@@ -17,12 +16,8 @@ import com.sappenin.objectify.annotation.Money;
  * 
  * @author David Fuelling <sappenin@gmail.com>
  */
-public class BigMoneyTranslationTests extends TestBase
+public class BigMoneyTranslationTest extends TestBase
 {
-	/** */
-	@SuppressWarnings("unused")
-	private static Logger log = Logger.getLogger(BigMoneyTranslationTests.class.getName());
-
 	/** */
 	@com.googlecode.objectify.annotation.Entity
 	@Cache

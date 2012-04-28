@@ -5,18 +5,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.joda.money.BigMoney;
-
 /**
  * <p>
- * When placed on an entity field of type {@link Money} or {@link BigMoney}, the
- * following properties will be stored for that property:
+ * When placed on an entity field of type {@link BigDecimal} , the following
+ * properties will be stored for the property:
  * <ul>
- * <li>The currency value, encoded as a lexigraphically-encoded String.</li>
- * <li>The currency code, as a String</li>
- * <li>(Optional) Currency value in human-readable format (enabled by default)</li>
+ * <li>The BigDecimal value, encoded as a lexigraphically-encoded String.</li>
+ * <li>(Optional) BigDecimal value in human-readable format (enabled by default)
+ * </li>
  * </ul>
  * </p>
+ * 
  * <p>
  * To customize the behavior of this annotation, the following properties may be
  * set:
@@ -40,15 +39,9 @@ import org.joda.money.BigMoney;
  * <br/>
  * <li><b>{@code indexEncodedAmount}</b>: Set to {@code true} to index the
  * encodedAmount property (<b>defaults to {@code true}</b>).</li>
- * <br/>
- * <li><b>{@code indexCurrencyCode}</b>: Set to {@code true} to index the
- * currencyCode property (<b>defaults to {@code false}</b>).</li>
- * <br/>
- * <li><b>{@code currencyCodeFieldName}</b>: The property-name to store the
- * {@code currencyCode} value in Appengine Datastore Entities. (<b>defaults to
- * {@code 'currencyCode'}</b>).</li>
  * </ul>
  * </p>
+ * 
  * 
  * @author David Fuelling <sappenin@gmail.com>
  */
@@ -56,7 +49,7 @@ import org.joda.money.BigMoney;
 @Target({
 	ElementType.FIELD
 })
-public @interface Money
+public @interface BigDecimal
 {
 	boolean storeDisplayableAmount() default true;
 
@@ -67,9 +60,4 @@ public @interface Money
 	String encodedAmountFieldName() default "encodedAmount";
 
 	boolean indexEncodedAmount() default true;
-
-	String currencyCodeFieldName() default "currencyCode";
-
-	boolean indexCurrencyCode() default false;
-
 }

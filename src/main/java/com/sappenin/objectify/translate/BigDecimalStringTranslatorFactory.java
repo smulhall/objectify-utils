@@ -3,13 +3,16 @@ package com.sappenin.objectify.translate;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 
+import com.googlecode.objectify.impl.Node;
 import com.googlecode.objectify.impl.Path;
 import com.googlecode.objectify.impl.Property;
+import com.googlecode.objectify.impl.TypeUtils;
+import com.googlecode.objectify.impl.translate.AbstractTranslator;
 import com.googlecode.objectify.impl.translate.CreateContext;
 import com.googlecode.objectify.impl.translate.LoadContext;
 import com.googlecode.objectify.impl.translate.SaveContext;
-import com.googlecode.objectify.impl.translate.ValueTranslator;
-import com.googlecode.objectify.impl.translate.ValueTranslatorFactory;
+import com.googlecode.objectify.impl.translate.TranslatorFactory;
+import com.googlecode.objectify.repackaged.gentyref.GenericTypeReflector;
 import com.sappenin.objectify.translate.util.BigDecimalCodec;
 
 /**
@@ -35,33 +38,149 @@ import com.sappenin.objectify.translate.util.BigDecimalCodec;
  * 
  * @author David Fuelling <sappenin@gmail.com>
  */
-public class BigDecimalStringTranslatorFactory extends ValueTranslatorFactory<BigDecimal, String>
+public class BigDecimalStringTranslatorFactory implements TranslatorFactory<BigDecimal>
 {
-	/**
-	 * Construct this converter with the default factor (1000), which can store
-	 * three points of precision past the decimal point.
-	 */
-	public BigDecimalStringTranslatorFactory()
-	{
-		super(BigDecimal.class);
-	}
-
 	@Override
-	protected ValueTranslator<BigDecimal, String> createSafe(Path path, Property property, Type type, CreateContext ctx)
+	public BigDecimalTranslator create(final Path path, final Property property, final Type type, CreateContext ctx)
 	{
-		return new ValueTranslator<BigDecimal, String>(path, String.class)
+		if (java.math.BigDecimal.class.isAssignableFrom(GenericTypeReflector.erase(type)))
 		{
-			@Override
-			protected BigDecimal loadValue(String value, LoadContext ctx)
+			return new BigDecimalTranslator(property, type, ctx);
+		}
+		else
+		{
+			return null;
+		}
+
+	}
+
+	/**
+	 * Translator which knows what to do with a {@link java.math.BigDecimal}.<br/>
+	 * <br/>
+	 * This class utilizes an optional
+	 * {@link com.sappenin.objectify.annotation.BigDecimal} annotation which
+	 * allows for fine-grained control over the field names used to store the
+	 * BigDecimal information, as well as indexing of each sub-field. See the
+	 * Javadoc of that annotation for more details.
+	 * 
+	 * @author David Fuelling <sappenin@gmail.com>
+	 */
+	static class BigDecimalTranslator extends AbstractTranslator<BigDecimal>
+	{
+		private boolean storeDisplayableAmount;
+		private boolean indexDisplayableAmount;
+		private boolean indexAmount;
+
+		private String encodedAmountFieldName = "encodedAmount";
+		private String displayableAmountFieldName = "displayableAmount";
+
+		/** */
+		public BigDecimalTranslator(final Property property, final Type type, final CreateContext ctx)
+		{
+			super();
+
+			@SuppressWarnings("unchecked")
+			final Class<BigDecimal> clazz = (Class<BigDecimal>) GenericTypeReflector.erase(type);
+
+			// Look for an @BigDecimal Annotation, if present.
+			com.sappenin.objectify.annotation.BigDecimal bigDecimalAnnotation = TypeUtils.getAnnotation(
+				com.sappenin.objectify.annotation.BigDecimal.class, property, clazz);
+			if (bigDecimalAnnotation != null)
 			{
-				return BigDecimalCodec.decodeAsBigDecimal(value.toString());
+				storeDisplayableAmount = bigDecimalAnnotation.storeDisplayableAmount();
+				indexAmount = bigDecimalAnnotation.indexEncodedAmount();
+
+				indexDisplayableAmount = bigDecimalAnnotation.indexDisplayableAmount();
+				encodedAmountFieldName = bigDecimalAnnotation.encodedAmountFieldName();
+				displayableAmountFieldName = bigDecimalAnnotation.displayableAmountFieldName();
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.googlecode.objectify.impl.translate.AbstractTranslator#loadAbstract
+		 * (com.googlecode.objectify.impl.Node,
+		 * com.googlecode.objectify.impl.translate.LoadContext)
+		 */
+		@Override
+		protected BigDecimal loadAbstract(Node node, LoadContext ctx)
+		{
+			if (!node.hasMap())
+			{
+				node.getPath().throwIllegalState("Expected map of values but found: " + node);
 			}
 
-			@Override
-			protected String saveValue(BigDecimal value, SaveContext ctx)
+			BigDecimal returnable = null;
+
+			// Get the amount as a BigDecimal and the currencyCode as a String.
+			Node amountNode = node.get(encodedAmountFieldName);
+			Object amountValue = amountNode.getPropertyValue();
+			if ((amountValue != null) && (amountValue.toString().length() > 0))
 			{
-				return BigDecimalCodec.encode(value);
+
+				// //////////
+				// Get the CurrencyUnit, defaulting to USD
+				// //////////
+				BigDecimal bdValue = null;
+				try
+				{
+					bdValue = BigDecimalCodec.decodeAsBigDecimal(amountValue.toString());
+				}
+				catch (Exception e)
+				{
+					System.err.print("Unable to Decode BigDecimal from encoded string \"" + amountValue + "\"");
+					e.printStackTrace();
+				}
+
+				returnable = bdValue;
 			}
-		};
+
+			return returnable;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.googlecode.objectify.impl.translate.AbstractTranslator#saveAbstract
+		 * (java.lang.Object, com.googlecode.objectify.impl.Path, boolean,
+		 * com.googlecode.objectify.impl.translate.SaveContext)
+		 */
+		@Override
+		protected Node saveAbstract(BigDecimal pojo, Path path, boolean index, SaveContext ctx)
+		{
+			if (pojo == null)
+			{
+				Node node = new Node(path);
+				node.setPropertyValue(null, index);
+				return node;
+			}
+			else
+			{
+				Node returnableNode = new Node(path);
+
+				// EncodedAmountPath
+				Path encodedAmountPath = path.extend(encodedAmountFieldName);
+				Node encodedAmountNode = new Node(encodedAmountPath);
+				// Encode the Amount value as a String
+				String encodedValue = BigDecimalCodec.encode(pojo);
+				encodedAmountNode.setPropertyValue(encodedValue, indexAmount);
+				returnableNode.addToMap(encodedAmountNode);
+
+				// DisplayableAmountPath (This is never loaded)
+				if (storeDisplayableAmount)
+				{
+					Path displayableAmountPath = path.extend(displayableAmountFieldName);
+					Node displayableAmountNode = new Node(displayableAmountPath);
+					displayableAmountNode.setPropertyValue(pojo.toString(), indexDisplayableAmount);
+					returnableNode.addToMap(displayableAmountNode);
+				}
+				return returnableNode;
+			}
+
+		}
 	}
+
 }
