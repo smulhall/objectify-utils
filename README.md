@@ -1,11 +1,18 @@
-objectify-utils (Objectify Utilities for App Engine by Sappenin)
+objectify-utils (Objectify Utilities for App Engine)
 ===========================
 
-This project contains several utility and extension classes to enhance <a href="http://code.google.com/p/objectify-appengine">Objectify</a> with capabilities related large numbers and Money using Joda Money.
+This project contains several utility and extension classes to enhance <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a> with capabilities related large numbers and Money using Joda Money.
 
-First, download the latest <a href="https://github.com/sappenin/objectify-utils/blob/master/maven/com/sappenin/objectify/objectify-utils/1.0.0/objectify-utils-1.0.0.jar">objectify-utils-1.0.0.jar</a> and include it your application's classpath.
+First, download the latest <a href="https://github.com/sappenin/objectify-utils/raw/master/maven/com/sappenin/objectify/objectify-utils/1.0.0/objectify-utils-1.0.0.jar">objectify-utils-1.0.0.jar</a> and include it your application's classpath.
 
-Maven users should add the following dependency instead:
+Maven users should utilize the following repository and dependency instead:
+
+	<repositories>
+		<repository>
+			<id>sappenin-objectify-utils</id>
+			<url>https://github.com/sappenin/objectify-utils/tree/master/maven</url>
+		</repository>
+	</repositories>
 
     <dependency>
     	<groupId>com.sappenin.objectify</groupId>
@@ -21,13 +28,19 @@ Next, be sure to register each annotation that you plan to use, as follows:
 
 BigDecimal Entity Fields
 -------
-To persist properties of type java.math.BigDecimal, annotate your field with the @com.sappenin.objectify.annotations.BigDecimal.  Be sure to not confuse this with the default BigDecimal support provided by Objectify which doesn't handle indexing properly (see here: http://code.google.com/p/objectify-appengine/source/browse/trunk/src/com/googlecode/objectify/impl/translate/opt/BigDecimalLongTranslatorFactory.java).    
+To persist properties of type java.math.BigDecimal, annotate your field with the @com.sappenin.objectify.annotations.BigDecimal.  Be sure to not confuse this with the default BigDecimal support provided by Objectify which doesn't handle indexing properly (see <a href="http://code.google.com/p/objectify-appengine/source/browse/trunk/src/com/googlecode/objectify/impl/translate/opt/BigDecimalLongTranslatorFactory.java">here</a>).    
 
 Example configuration:
 
-    @BigDecimal
-    BigDecimal bigDecimal;
-
+    @Entity
+    public class OfyEntity
+	{
+   		
+   		... //Rest of Objectify4 Entity definition
+   	
+   		@BigDecimal
+    	BigDecimal bigDecimal;
+	}
 
 Joda-Money  Entity Fields
 -------
@@ -35,12 +48,16 @@ To persist properties of type com.joda.money.Money or com.joda.money.BigMoney, a
 
 Example configuration:
 
-    @Money
-    BigMoney moneyAmount;
+	@Entity
+    public class OfyEntity
+	{
+   		
+   		... //Rest of Objectify4 Entity definition
+   	
+    	@Money
+    	BigMoney moneyAmount;
 
-
-
-  
+	}
 
     
 Authors
