@@ -143,7 +143,7 @@ public class BigDecimalCodecTest
 	}
 
 	/**
-	 * Helper to create a BigDecimalOfy.
+	 * Helper to create a java.math.BigDecimal.
 	 * 
 	 * @param string
 	 * @return

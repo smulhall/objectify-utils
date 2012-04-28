@@ -17,11 +17,12 @@ import com.sappenin.objectify.translate.util.BigDecimalCodec;
 
 /**
  * <p>
- * This a more advanced strategy for storing BigDecimal in the datastore.
- * BigDecimalStringTranslatorFactory encodes the BigDecimal value and stores the
- * result as a String. This is appropriate for monetary and other values of ~475
- * digits (the end encoded value length is number dependent). This strategy
- * offers the following advantages over encoding a BigDecimal as a Long:
+ * This a more advanced strategy for storing java.math.BigDecimal in the
+ * datastore. BigDecimalStringTranslatorFactory encodes the java.math.BigDecimal
+ * value and stores the result as a String. This is appropriate for monetary and
+ * other values of ~475 digits (the end encoded value length is number
+ * dependent). This strategy offers the following advantages over encoding a
+ * java.math.BigDecimal as a Long:
  * <ul>
  * <li>Offers support for arbitrary precision numbers</li>
  * <li>Supports very large numbers (~475 digits long)</li>
@@ -60,8 +61,8 @@ public class BigDecimalStringTranslatorFactory implements TranslatorFactory<BigD
 	 * This class utilizes an optional
 	 * {@link com.sappenin.objectify.annotation.BigDecimal} annotation which
 	 * allows for fine-grained control over the field names used to store the
-	 * BigDecimal information, as well as indexing of each sub-field. See the
-	 * Javadoc of that annotation for more details.
+	 * java.math.BigDecimal information, as well as indexing of each sub-field.
+	 * See the Javadoc of that annotation for more details.
 	 * 
 	 * @author David Fuelling <sappenin@gmail.com>
 	 */
@@ -114,7 +115,8 @@ public class BigDecimalStringTranslatorFactory implements TranslatorFactory<BigD
 
 			BigDecimal returnable = null;
 
-			// Get the amount as a BigDecimal and the currencyCode as a String.
+			// Get the amount as a java.math.BigDecimal and the currencyCode as
+			// a String.
 			Node amountNode = node.get(encodedAmountFieldName);
 			Object amountValue = amountNode.getPropertyValue();
 			if ((amountValue != null) && (amountValue.toString().length() > 0))
@@ -130,7 +132,8 @@ public class BigDecimalStringTranslatorFactory implements TranslatorFactory<BigD
 				}
 				catch (Exception e)
 				{
-					System.err.print("Unable to Decode BigDecimal from encoded string \"" + amountValue + "\"");
+					System.err.print("Unable to Decode java.math.BigDecimal from encoded string \"" + amountValue
+						+ "\"");
 					e.printStackTrace();
 				}
 

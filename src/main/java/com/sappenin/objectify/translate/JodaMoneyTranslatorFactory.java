@@ -2,8 +2,6 @@ package com.sappenin.objectify.translate;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.joda.money.BigMoney;
 import org.joda.money.BigMoneyProvider;
@@ -27,8 +25,8 @@ import com.sappenin.objectify.translate.util.BigDecimalCodec;
  * properties of a {@link org.joda.money.BigMoneyProvider} as a "value" and a
  * "currencyUnit" (both of which are Strings), similar to how an Embedded class
  * would be stored. The {@code value} is an encoded-String version of a
- * {@link BigDecimal} that supports lexigraphical sorting and large-digit number
- * sets.
+ * {@link java.math.BigDecimal} that supports lexigraphical sorting and
+ * large-digit number sets.
  * 
  * @author David Fuelling <sappenin@gmail.com>
  */
@@ -70,8 +68,6 @@ public class JodaMoneyTranslatorFactory implements TranslatorFactory<BigMoneyPro
 	 */
 	static class JodaMoneyTranslator extends AbstractTranslator<BigMoneyProvider>
 	{
-		private static final Logger log = Logger.getLogger(JodaMoneyTranslator.class.getName());
-
 		// If false, use Money; Otherwise, use bigMoney
 		private boolean isBigMoney = false;
 
@@ -127,7 +123,8 @@ public class JodaMoneyTranslatorFactory implements TranslatorFactory<BigMoneyPro
 
 			BigMoneyProvider returnable = null;
 
-			// Get the amount as a BigDecimal and the currencyCode as a String.
+			// Get the amount as a java.math.BigDecimal and the currencyCode as
+			// a String.
 			Node amountNode = node.get(encodedAmountFieldName);
 			Object amountValue = amountNode.getPropertyValue();
 			if ((amountValue != null) && (amountValue.toString().length() > 0))
@@ -143,7 +140,9 @@ public class JodaMoneyTranslatorFactory implements TranslatorFactory<BigMoneyPro
 				}
 				catch (Exception e)
 				{
-					log.log(Level.SEVERE, "Unable to Decode BigDecimal from encoded string \"" + amountValue + "\"", e);
+					System.err.print("Unable to Decode java.math.BigDecimal from encoded string \"" + amountValue
+						+ "\"");
+					e.printStackTrace();
 				}
 
 				// //////////

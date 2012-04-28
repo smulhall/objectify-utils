@@ -7,8 +7,8 @@ import java.lang.annotation.Target;
 
 /**
  * <p>
- * When placed on an entity field of type {@link BigDecimal} , the following
- * properties will be stored for the property:
+ * When placed on an entity field of type {@link java.math.BigDecimal} , the
+ * following properties will be stored for the property:
  * <ul>
  * <li>The BigDecimal value, encoded as a lexigraphically-encoded String.</li>
  * <li>(Optional) BigDecimal value in human-readable format (enabled by default)
