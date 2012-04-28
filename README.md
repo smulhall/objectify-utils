@@ -3,7 +3,28 @@ objectify-utils (Objectify Utilities for App Engine)
 
 This project contains several utility and extension classes to enhance <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a> with capabilities related large numbers and Money using Joda Money.
 
+These include:
+
++ <b>Fully Indexable BigDecimal and Money Fields</b>
+	Whether your property is of type BigDecimal, Money, or BigMoney, the Translators in objectify-utils store all number values in an encoded String-format that is lexigraphically equivalent to numeric values when it comes to comparison.  This encoding format supports negative values, and means currency values can be fully indexed, sorted, and queried natively via the Datastore.   
+
++ <b>Arbitrary Precision</b>
+	Objectify-utils translators allows for arbitrary number-precision across all Entity groups.  For example, one "Car" entity with a "value" property of "$25,000.00" could be stored in one Entity group while another "Car" could have a more precise value of "$25,000.253".
+
++ <b>Anotation Support for Joda Money and BigMoney</b>
+	Joda-Money and Joda-BigMoney both implement a common interface (BigMoneyProvider), making it possible to utilze the same translator for both object types.  
+
++ <b>Full Currency Code Support</b><br/>
+	JodaMoneyTranslatorFactory can store a currency-code for any Money/BigMoney object in a different embedded field that is related to the currency value amount.  
+
++ <b>Full Index Control and Field Name Customization</b>
+	Using the @BigDecimal and @Money annotations, you can control how your Number and Currency information is stored, what is indexed, and what each embedded field is called.
+
 <b><i>Note: This library is not compatible with Objectify versions prior to version 4.0a3.</i></b>
+
+
+Getting Started
+----------
 
 First, download the latest <a href="https://github.com/sappenin/objectify-utils/raw/master/maven/com/sappenin/objectify/objectify-utils/1.0.0/objectify-utils-1.0.0.jar">objectify-utils-1.0.0.jar</a> and include it your application's classpath.
 
