@@ -3,7 +3,8 @@ objectify-utils (Objectify Utilities for App Engine)
 
 This project contains several utility and extension classes to enhance <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a> with capabilities related large numbers and Money using Joda Money.
 
-These include:
+Benefits
+------
 
 + <b>Fully Indexable BigDecimal and Money Fields</b>
 	Whether your property is of type BigDecimal, Money, or BigMoney, the Translators in objectify-utils store all number values in an encoded String-format that is lexigraphically equivalent to numeric values when it comes to comparison.  This encoding format supports negative values, and means currency values can be fully indexed, sorted, and queried natively via the Datastore.   
@@ -14,7 +15,7 @@ These include:
 + <b>Anotation Support for Joda Money and BigMoney</b>
 	Joda-Money and Joda-BigMoney both implement a common interface (BigMoneyProvider), making it possible to utilze the same translator for both object types.  
 
-+ <b>Full Currency Code Support</b><br/>
++ <b>Full Currency Code Support</b>
 	JodaMoneyTranslatorFactory can store a currency-code for any Money/BigMoney object in a different embedded field that is related to the currency value amount.  
 
 + <b>Full Index Control and Field Name Customization</b>
