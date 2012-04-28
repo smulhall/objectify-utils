@@ -1,0 +1,138 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.sappenin</groupId>
+	<artifactId>objectify-utils</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>Objectify utils from Sappenin</name>
+	<packaging>jar</packaging>
+	<organization>
+		<name>Sappenin Inc.</name>
+		<url>http://www.sappenin.com</url>
+	</organization>
+	<contributors>
+		<contributor>
+			<name>David Fuelling</name>
+			<organizationUrl>http://www.sappenin.com</organizationUrl>
+			<url>http://softwareblog.sappenin.com</url>
+		</contributor>
+	</contributors>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven-gae-plugin-repo</id>
+			<name>maven-gae-plugin repository</name>
+			<url>
+                http://maven-gae-plugin.googlecode.com/svn/repository
+            </url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<properties>
+		<gae.version>1.6.4</gae.version>
+		<joda.money.version>0.6</joda.money.version>
+	</properties>
+
+	<dependencies>
+
+		<!-- GAE Dependencies -->
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-1.0-sdk</artifactId>
+			<version>${gae.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.objectify</groupId>
+			<artifactId>objectify</artifactId>
+			<version>4.0a3</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.joda</groupId>
+			<artifactId>joda-money</artifactId>
+			<version>${joda.money.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- TESTING -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.5.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- GAE libraries for local testing as described here: http://code.google.com/appengine/docs/java/howto/unittesting.html -->
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-stubs</artifactId>
+			<version>${gae.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-testing</artifactId>
+			<version>${gae.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.kindleit</groupId>
+				<artifactId>maven-gae-plugin</artifactId>
+				<version>0.5.8</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<version>1.1</version>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+
+		<!-- Maven-GAE Repo http://code.google.com/p/maven-gae-plugin/ and http://64.34.178.139/maven_gae_plugin/usage.html -->
+		<!-- <repository> <id>maven-gae-plugin-repo</id> <name>maven-gae-plugin 
+			repository</name> <url> http://maven-gae-plugin.googlecode.com/svn/repository 
+			</url> </repository> -->
+
+
+		<repository>
+			<id>objectify-appengine</id>
+			<url>http://objectify-appengine.googlecode.com/svn/maven</url>
+		</repository>
+
+	</repositories>
+
+</project>
