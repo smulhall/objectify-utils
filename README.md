@@ -21,7 +21,7 @@ JodaMoneyTranslatorFactory can store a currency-code for any Money/BigMoney obje
 + <b>Full Index Control and Field Name Customization</b><br/>
 Using the @BigDecimal and @Money annotations, you can control how your Number and Currency information is stored, what is indexed, and what each embedded field is called.
 
-<b><i>Note: This library is not compatible with Objectify versions prior to version 4.0a3.</i></b>
+<b><i><u>Note: This library is not compatible with Objectify versions prior to version 4.0a3.</u></i></b>
 
 
 Getting Started
