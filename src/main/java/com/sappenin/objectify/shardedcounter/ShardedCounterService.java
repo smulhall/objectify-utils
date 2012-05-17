@@ -1,5 +1,6 @@
 package com.sappenin.objectify.shardedcounter;
 
+
 /**
  * A Service class for interacting with ShardedCounters. Capable of
  * incrementing/decrementing the counter.
@@ -54,4 +55,5 @@ public interface ShardedCounterService
 	 * @return Summed total of all shards' counts
 	 */
 	public void decrement(String counterName, int count);
+
 }
