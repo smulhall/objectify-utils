@@ -82,8 +82,18 @@ public class BigDecimalStringTranslationTest extends TestBase
 		assert hbd.bigDecimalAmountAllNoIndices.equals(fetched.bigDecimalAmountAllNoIndices);
 		assert hbd.bigDecimalAmountNoDisplayableAmount.equals(fetched.bigDecimalAmountNoDisplayableAmount);
 
+		assert hbd.bigDecimalAmount.compareTo(fetched.bigDecimalAmount) == 0;
+		assert hbd.bigDecimalAmountAll.compareTo(fetched.bigDecimalAmountAll) == 0;
+		assert hbd.bigDecimalAmountWith3Scale.compareTo(fetched.bigDecimalAmountWith3Scale) == 0;
+		assert hbd.bigDecimalAmountWith2Zeros.compareTo(fetched.bigDecimalAmountWith2Zeros) == 0;
+		assert hbd.bigDecimalAmountWith3Zeros.compareTo(fetched.bigDecimalAmountWith3Zeros) == 0;
+		assert hbd.bigDecimalAmountWith4Zeros.compareTo(fetched.bigDecimalAmountWith4Zeros) == 0;
+		assert hbd.bigDecimalAmountWith5Zeros.compareTo(fetched.bigDecimalAmountWith5Zeros) == 0;
+		assert hbd.bigDecimalAmountAllNoIndices.compareTo(fetched.bigDecimalAmountAllNoIndices) == 0;
+		assert hbd.bigDecimalAmountNoDisplayableAmount.compareTo(fetched.bigDecimalAmountNoDisplayableAmount) == 0;
+
 	}
-	
+
 	@Test
 	public void testBigDecimalStringConverterUsingIntConstructor() throws Exception
 	{
@@ -112,6 +122,16 @@ public class BigDecimalStringTranslationTest extends TestBase
 		assert hbd.bigDecimalAmountWith5Zeros.equals(fetched.bigDecimalAmountWith5Zeros);
 		assert hbd.bigDecimalAmountAllNoIndices.equals(fetched.bigDecimalAmountAllNoIndices);
 		assert hbd.bigDecimalAmountNoDisplayableAmount.equals(fetched.bigDecimalAmountNoDisplayableAmount);
+
+		assert hbd.bigDecimalAmount.compareTo(fetched.bigDecimalAmount) == 0;
+		assert hbd.bigDecimalAmountAll.compareTo(fetched.bigDecimalAmountAll) == 0;
+		assert hbd.bigDecimalAmountWith3Scale.compareTo(fetched.bigDecimalAmountWith3Scale) == 0;
+		assert hbd.bigDecimalAmountWith2Zeros.compareTo(fetched.bigDecimalAmountWith2Zeros) == 0;
+		assert hbd.bigDecimalAmountWith3Zeros.compareTo(fetched.bigDecimalAmountWith3Zeros) == 0;
+		assert hbd.bigDecimalAmountWith4Zeros.compareTo(fetched.bigDecimalAmountWith4Zeros) == 0;
+		assert hbd.bigDecimalAmountWith5Zeros.compareTo(fetched.bigDecimalAmountWith5Zeros) == 0;
+		assert hbd.bigDecimalAmountAllNoIndices.compareTo(fetched.bigDecimalAmountAllNoIndices) == 0;
+		assert hbd.bigDecimalAmountNoDisplayableAmount.compareTo(fetched.bigDecimalAmountNoDisplayableAmount) == 0;
 
 	}
 
