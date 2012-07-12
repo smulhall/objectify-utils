@@ -45,8 +45,8 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	{
 		super.setUp();
 
-		super.fact.register(Counter.class);
-		super.fact.register(CounterShard.class);
+		fact.register(Counter.class);
+		fact.register(CounterShard.class);
 	}
 
 	@After
@@ -62,42 +62,42 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	@Test
 	public void testShardedCounterServiceConstructor()
 	{
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache);
 		assertEquals(0, shardedCounterService.getCount(TEST_COUNTER1));
 	}
 
 	@Test
 	public void testShardedCounterServiceConstructorFull()
 	{
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 10);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 10);
 		assertEquals(0, shardedCounterService.getCount(TEST_COUNTER1));
 	}
 
 	@Test
 	public void testIncrement_DefaultNumShards()
 	{
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache);
 		doCounterAssertions();
 	}
 
 	@Test
 	public void testIncrement_Specifiy10Shards()
 	{
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 10);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 10);
 		doCounterAssertions();
 	}
 
 	@Test
 	public void testIncrement_Specifiy1Shard()
 	{
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 1);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 1);
 		doCounterAssertions();
 	}
 
 	@Test
 	public void testGetCount()
 	{
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache);
 
 		shardedCounterService.increment(TEST_COUNTER1);
 		shardedCounterService.increment(TEST_COUNTER2);
@@ -115,7 +115,7 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	public void testAddShards_AddToFirstCounter()
 	{
 		// Use 3 shards
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 3);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 3);
 
 		shardedCounterService.increment(TEST_COUNTER1);
 		shardedCounterService.increment(TEST_COUNTER2);
@@ -153,7 +153,7 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	public void testAddShards_AddToSecondCounter()
 	{
 		// Use 3 shards
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 3);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 3);
 
 		shardedCounterService.increment(TEST_COUNTER1);
 		shardedCounterService.increment(TEST_COUNTER2);
@@ -191,7 +191,7 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	public void testAddShards_AddToBoth()
 	{
 		// Use 3 shards
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 3);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 3);
 
 		shardedCounterService.increment(TEST_COUNTER1);
 		shardedCounterService.increment(TEST_COUNTER2);
@@ -230,7 +230,7 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	public void testDecrementString_OneCounter()
 	{
 		// Use 3 shards
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 3);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 3);
 
 		this.doCounterAssertions();
 
@@ -246,7 +246,7 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	public void testDecrementString_TwoCounters()
 	{
 		// Use 3 shards
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 3);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 3);
 
 		this.doCounterAssertions();
 
@@ -263,7 +263,7 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	public void testDecrementAll()
 	{
 		// Use 3 shards
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 3);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 3);
 
 		this.doCounterAssertions();
 
@@ -279,7 +279,7 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	public void testDecrementNegative()
 	{
 		// Use 3 shards
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 3);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 3);
 
 		this.doCounterAssertions();
 
@@ -296,7 +296,7 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	public void testDecrementNegative_Iteratively()
 	{
 		// Use 3 shards
-		shardedCounterService = new ShardedCounterServiceImpl(super.fact, super.memcache, 3);
+		shardedCounterService = new ShardedCounterServiceImpl(this.fact, this.memcache, 3);
 
 		this.doCounterAssertions();
 
