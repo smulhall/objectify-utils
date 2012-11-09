@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sappenin.objectify</groupId>
 	<artifactId>objectify-utils</artifactId>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.4</version>
 	<name>objectify-utils</name>
 	<description>Objectify-Appengine utility classes from Sappenin</description>
 	<packaging>jar</packaging>
