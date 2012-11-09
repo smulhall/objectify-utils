@@ -1,6 +1,5 @@
 package com.sappenin.objectify.shardedcounter;
 
-import com.googlecode.objectify.Objectify;
 
 /**
  * A Service class for interacting with ShardedCounters. Capable of
@@ -39,16 +38,6 @@ public interface ShardedCounterService
 	public void increment(String counterName);
 
 	/**
-	 * Increment the value of the sharded counter specified by
-	 * {@code counterName}.
-	 * 
-	 * @param counterName
-	 * @param ofy
-	 * @return Summed total of all shards' counts
-	 */
-	public void increment(String counterName, Objectify ofy);
-
-	/**
 	 * Reduces the counter specified by {@code counterName} by 1. .
 	 * 
 	 * @param counterName
@@ -56,15 +45,6 @@ public interface ShardedCounterService
 	 * @return Summed total of all shards' counts
 	 */
 	public void decrement(String counterName);
-
-	/**
-	 * Reduces the counter specified by {@code counterName} by 1. .
-	 * 
-	 * @param counterName
-	 * @param ofy
-	 * @return Summed total of all shards' counts
-	 */
-	public void decrement(String counterName, Objectify ofy);
 
 	/**
 	 * Reduces the counter specified by {@code counterName} by the {@code count}
@@ -75,16 +55,5 @@ public interface ShardedCounterService
 	 * @return Summed total of all shards' counts
 	 */
 	public void decrement(String counterName, int count);
-
-	/**
-	 * Reduces the counter specified by {@code counterName} by the {@code count}
-	 * .
-	 * 
-	 * @param counterName
-	 * @param count
-	 * @param ofy
-	 * @return Summed total of all shards' counts
-	 */
-	public void decrement(String counterName, int count, Objectify ofy);
 
 }

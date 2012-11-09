@@ -30,8 +30,8 @@ import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
 import com.googlecode.objectify.Objectify;
-import com.googlecode.objectify.ObjectifyFactory;
-import com.googlecode.objectify.TxnWork;
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Work;
 import com.sappenin.objectify.shardedcounter.model.Counter;
 import com.sappenin.objectify.shardedcounter.model.CounterShard;
 
@@ -63,7 +63,6 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 	 */
 	private final Random generator = new Random();
 
-	private final ObjectifyFactory objectifyFactory;
 	private final MemcacheService memcacheService;
 	private final int numInitialShards;
 
@@ -74,15 +73,13 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 	/**
 	 * Default Constructor for Dependency-Injection.
 	 * 
-	 * @param objectifyFactory An instance of ObjectifyFactory that can be used
-	 *            to create a new {@link Objectify}.
 	 * @param memcacheService
 	 * @param numInitialShards The number of initial {@link CounterShard}
 	 *            objects to create for a new counter.
 	 */
-	public ShardedCounterServiceImpl(final ObjectifyFactory objectifyFactory, final MemcacheService memcacheService)
+	public ShardedCounterServiceImpl(final MemcacheService memcacheService)
 	{
-		this(objectifyFactory, memcacheService, DEFAULT_NUM_COUNTER_SHARDS);
+		this(memcacheService, DEFAULT_NUM_COUNTER_SHARDS);
 	}
 
 	/**
@@ -94,10 +91,8 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 	 * @param numInitialShards The number of initial {@link CounterShard}
 	 *            objects to create for a new counter.
 	 */
-	public ShardedCounterServiceImpl(final ObjectifyFactory objectifyFactory, final MemcacheService memcacheService,
-			final int numInitialShards)
+	public ShardedCounterServiceImpl(final MemcacheService memcacheService, final int numInitialShards)
 	{
-		this.objectifyFactory = objectifyFactory;
 		this.memcacheService = memcacheService;
 		this.numInitialShards = numInitialShards;
 	}
@@ -111,18 +106,18 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 	{
 		// We don't init the CounterShards here - they are lazily init'd on each
 		// increment
-		Integer INumShards = ofy().transact(0, new TxnWork<Objectify, Integer>()
+		Integer INumShards = ObjectifyService.ofy().transact(new Work<Integer>()
 		{
 			@Override
-			public Integer run(Objectify ofy)
+			public Integer run()
 			{
-				Counter counter = getCounter(counterName, ofy);
+				Counter counter = getCounter(counterName);
 				if (counter == null)
 				{
 					counter = new Counter(counterName, numInitialShards);
 				}
 				counter.setNumShards(counter.getNumShards() + count);
-				ofy.save().entity(counter).now();
+				ObjectifyService.ofy().save().entity(counter).now();
 				return counter.getNumShards();
 			}
 		});
@@ -155,7 +150,7 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 		// }
 
 		// Get all CounterShards that "start with" 'counterName'.
-		QueryResultIterator<CounterShard> iterator = this.ofy().load().type(CounterShard.class)
+		QueryResultIterator<CounterShard> iterator = ObjectifyService.ofy().load().type(CounterShard.class)
 			.filter("__key__ >=", counterShardKeyStartsWith).filter("__key__ <", counterShardKeyEndsWith).iterator();
 
 		long sum = 0;
@@ -173,12 +168,6 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 	@Override
 	public void increment(final String counterName)
 	{
-		this.increment(counterName, this.ofy());
-	}
-
-	@Override
-	public void increment(final String counterName, Objectify ofy)
-	{
 		// Find how many shards are in this counter.
 		int numShards = getShardCount(counterName);
 
@@ -189,14 +178,14 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 		// In a TX: Load the Shard from the Datastore, Increment it, and save it
 		// back
 
-		ofy().transact(0, new TxnWork<Objectify, CounterShard>()
+		ObjectifyService.ofy().transact(new Work<CounterShard>()
 		{
 			@Override
-			public CounterShard run(final Objectify ofy)
+			public CounterShard run()
 			{
-				final CounterShard counterShard = getCounterShard(counterName, shardNum, ofy);
+				final CounterShard counterShard = getCounterShard(counterName, shardNum);
 				counterShard.setCount(counterShard.getCount() + 1);
-				ofy.save().entity(counterShard).now();
+				ObjectifyService.ofy().save().entity(counterShard).now();
 				return counterShard;
 			}
 		});
@@ -214,19 +203,7 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 	}
 
 	@Override
-	public void decrement(String counterName, Objectify ofy)
-	{
-		decrement(counterName, 1, ofy);
-	}
-
-	@Override
-	public void decrement(final String counterName, final int count)
-	{
-		this.decrement(counterName, count, this.ofy());
-	}
-
-	@Override
-	public void decrement(final String counterName, int count, Objectify ofy)
+	public void decrement(final String counterName, int count)
 	{
 		if (count < 1)
 		{
@@ -242,12 +219,12 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 			// Choose the shard randomly from the available shards.
 			final long shardNum = generator.nextInt(numShards);
 
-			ofy.transact(0, new TxnWork<Objectify, CounterShard>()
+			ObjectifyService.ofy().transact(new Work<CounterShard>()
 			{
 				@Override
-				public CounterShard run(final Objectify ofy)
+				public CounterShard run()
 				{
-					final CounterShard counterShard = getCounterShard(counterName, shardNum, ofy);
+					final CounterShard counterShard = getCounterShard(counterName, shardNum);
 					if (counterShard == null)
 					{
 						// Do nothing and return. We can't decrement a counter
@@ -276,7 +253,7 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 							counterShard.setCount(counterShard.getCount() - 1);
 						}
 
-						ofy.save().entity(counterShard).now();
+						ObjectifyService.ofy().save().entity(counterShard).now();
 
 					}
 					return counterShard;
@@ -302,7 +279,7 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 	{
 		try
 		{
-			Counter counter = this.getCounter(counterName, this.ofy());
+			Counter counter = this.getCounter(counterName);
 			int shardCount = counter.getNumShards();
 			return shardCount;
 		}
@@ -313,27 +290,18 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 	}
 
 	/**
-	 * 
-	 * @return
-	 */
-	private Objectify ofy()
-	{
-		return this.objectifyFactory.begin();
-	}
-
-	/**
 	 * Helper function to get a named {@link Counter} from the datastore.
 	 * 
 	 * @return
 	 */
-	private Counter getCounter(final String counterName, Objectify ofyTx)
+	private Counter getCounter(final String counterName)
 	{
 		Counter returnableCounter = null;
 
 		try
 		{
 			com.googlecode.objectify.Key<Counter> counterKey = this.assembleCounterKey(counterName);
-			returnableCounter = ofyTx.load().type(Counter.class).filterKey(counterKey).first().get();
+			returnableCounter = ObjectifyService.ofy().load().type(Counter.class).filterKey(counterKey).first().get();
 		}
 		catch (RuntimeException re)
 		{
@@ -346,13 +314,13 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 		if (returnableCounter == null)
 		{
 			// Initialize the counter in the DS
-			returnableCounter = ofyTx.transact(0, new TxnWork<Objectify, Counter>()
+			returnableCounter = ObjectifyService.ofy().transact(new Work<Counter>()
 			{
 				@Override
-				public Counter run(Objectify ofy)
+				public Counter run()
 				{
 					final Counter counter = new Counter(counterName, DEFAULT_NUM_COUNTER_SHARDS);
-					ofy.save().entity(counter).now();
+					ObjectifyService.ofy().save().entity(counter).now();
 					return counter;
 				}
 			});
@@ -368,7 +336,7 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 	 * @param shardNumber
 	 * @return
 	 */
-	private CounterShard getCounterShard(String counterName, long shardNumber, Objectify ofy)
+	private CounterShard getCounterShard(String counterName, long shardNumber)
 	{
 		CounterShard counterShard = null;
 
@@ -376,7 +344,7 @@ public class ShardedCounterServiceImpl implements ShardedCounterService
 
 		try
 		{
-			counterShard = ofy.load().type(CounterShard.class).id(counterShardKeyIdentifier).get();
+			counterShard = ObjectifyService.ofy().load().type(CounterShard.class).id(counterShardKeyIdentifier).get();
 		}
 		catch (RuntimeException re)
 		{

@@ -10,7 +10,8 @@ import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestCo
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.googlecode.objectify.ObjectifyFactory;
-import com.googlecode.objectify.cache.TriggerFutureHook;
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.cache.AsyncCacheFilter;
 
 /**
  * All tests should extend this class to set up the GAE environment.
@@ -43,9 +44,8 @@ public class BaseObjectifyTest
 	@After
 	public void tearDown()
 	{
-		// This normally is done in the AsyncCacheFilter but that doesn't exist
-		// for tests
-		TriggerFutureHook.completeAllPendingFutures();
+		AsyncCacheFilter.complete();
+		ObjectifyService.reset();
 		this.helper.tearDown();
 	}
 
