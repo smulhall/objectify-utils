@@ -27,7 +27,7 @@ Using the @BigDecimal and @Money annotations, you can control how your Number an
 Getting Started
 ----------
 
-First, download the latest <a href="https://github.com/sappenin/objectify-utils/raw/master/maven/com/sappenin/objectify/objectify-utils/1.0.0/objectify-utils-1.0.0.jar">objectify-utils-1.0.0.jar</a> and include it your application's classpath.
+First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/1.0.4.zip">objectify-utils-1.0.4.jar</a> and include it your application's classpath.
 
 Maven users should utilize the following repository and dependency instead:
 
@@ -41,7 +41,7 @@ Maven users should utilize the following repository and dependency instead:
     <dependency>
     	<groupId>com.sappenin.objectify</groupId>
 		<artifactId>objectify-utils</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.4</version>
     </dependency>
 
 Next, be sure to register each annotation that you plan to use, as follows:
