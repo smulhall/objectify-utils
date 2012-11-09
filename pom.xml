@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sappenin.objectify</groupId>
 	<artifactId>objectify-utils</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4-SNAPSHOT</version>
 	<name>objectify-utils</name>
 	<description>Objectify-Appengine utility classes from Sappenin</description>
 	<packaging>jar</packaging>
@@ -29,12 +29,22 @@
 		</pluginRepository>
 	</pluginRepositories>
 
+	<repositories>
+		<repository>
+			<id>objectify-appengine</id>
+			<url>http://objectify-appengine.googlecode.com/svn/maven</url>
+		</repository>
+	</repositories>
+
 	<properties>
 
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<gae.version>1.6.4</gae.version>
+		<gae.version>1.7.3</gae.version>
 		<joda.money.version>0.6</joda.money.version>
+		<objectify.version>4.0b1</objectify.version>
 
+		<maven.gae.plugin.version>0.9.5</maven.gae.plugin.version>
+		<maven.compiler.plugin.version>2.5.1</maven.compiler.plugin.version>
 	</properties>
 
 	<dependencies>
@@ -50,7 +60,7 @@
 		<dependency>
 			<groupId>com.googlecode.objectify</groupId>
 			<artifactId>objectify</artifactId>
-			<version>4.0a3</version>
+			<version>${objectify.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -102,6 +112,7 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
+				<version>${maven.compiler.plugin.version}</version>
 			</plugin>
 
 			<plugin>
@@ -112,7 +123,7 @@
 					<execution>
 						<id>attach-sources</id>
 						<phase>verify</phase>
- 						<goals>
+						<goals>
 							<goal>jar-no-fork</goal>
 						</goals>
 					</execution>
@@ -122,26 +133,11 @@
 			<plugin>
 				<groupId>net.kindleit</groupId>
 				<artifactId>maven-gae-plugin</artifactId>
+				<version>${maven.gae.plugin.version}</version>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-			</plugin>
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>gwt-maven-plugin</artifactId> 
+				<version>0.9.5</version> </plugin> -->
 		</plugins>
 	</build>
-	<repositories>
-
-		<!-- Maven-GAE Repo http://code.google.com/p/maven-gae-plugin/ and http://64.34.178.139/maven_gae_plugin/usage.html -->
-		<!-- <repository> <id>maven-gae-plugin-repo</id> <name>maven-gae-plugin 
-			repository</name> <url> http://maven-gae-plugin.googlecode.com/svn/repository 
-			</url> </repository> -->
-
-
-		<repository>
-			<id>objectify-appengine</id>
-			<url>http://objectify-appengine.googlecode.com/svn/maven</url>
-		</repository>
-
-	</repositories>
 
 </project>
