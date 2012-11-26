@@ -41,7 +41,7 @@ Maven users should utilize the following repository and dependency instead:
     <dependency>
     	<groupId>com.sappenin.objectify</groupId>
 		<artifactId>objectify-utils</artifactId>
-		<version>1.0.4</version>
+		<version>1.0.5</version>
     </dependency>
 
 Next, be sure to register each annotation that you plan to use, as follows:
