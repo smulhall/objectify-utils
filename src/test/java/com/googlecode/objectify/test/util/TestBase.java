@@ -5,8 +5,8 @@ package com.googlecode.objectify.test.util;
 
 import java.util.logging.Logger;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.junit.After;
+import org.junit.Before;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -17,7 +17,6 @@ import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestCo
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.cache.AsyncCacheFilter;
@@ -38,25 +37,20 @@ public class TestBase
 	private static Logger log = Logger.getLogger(TestBase.class.getName());
 
 	/** */
-	protected TestObjectifyFactory fact;
-
-	/** */
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(
 	// Our tests assume strong consistency
 		new LocalDatastoreServiceTestConfig(),// .setDefaultHighRepJobPolicyUnappliedJobPercentage(100),
 		new LocalMemcacheServiceTestConfig(), new LocalTaskQueueTestConfig());
 
 	/** */
-	@BeforeMethod
+	@Before
 	public void setUp()
 	{
 		this.helper.setUp();
-
-		this.fact = new TestObjectifyFactory();
 	}
 
 	/** */
-	@AfterMethod
+	@After
 	public void tearDown()
 	{
 		AsyncCacheFilter.complete();
@@ -70,9 +64,8 @@ public class TestBase
 	 */
 	protected <T> T putClearGet(T saveMe)
 	{
-		Objectify ofy = this.fact.begin();
 
-		Key<T> key = ofy.save().entity(saveMe).now();
+		Key<T> key = ObjectifyService.ofy().save().entity(saveMe).now();
 
 		try
 		{
@@ -84,9 +77,9 @@ public class TestBase
 			throw new RuntimeException(e);
 		}
 
-		ofy.clear();
+		ObjectifyService.ofy().clear();
 
-		return ofy.load().key(key).get();
+		return ObjectifyService.ofy().load().key(key).get();
 	}
 
 	/** Get a DatastoreService */

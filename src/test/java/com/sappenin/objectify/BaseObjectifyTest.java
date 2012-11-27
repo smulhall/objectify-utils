@@ -9,7 +9,6 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
-import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cache.AsyncCacheFilter;
 
@@ -29,7 +28,6 @@ public class BaseObjectifyTest
 		new LocalMemcacheServiceTestConfig(), new LocalTaskQueueTestConfig());
 
 	protected MemcacheService memcache;
-	protected ObjectifyFactory fact;
 
 	@Before
 	public void setUp() throws Exception
@@ -37,8 +35,6 @@ public class BaseObjectifyTest
 		this.helper.setUp();
 
 		memcache = MemcacheServiceFactory.getMemcacheService();
-
-		this.fact = new ObjectifyFactory();
 	}
 
 	@After

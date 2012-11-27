@@ -1,11 +1,14 @@
 package com.sappenin.objectify.translate;
 
+import static org.junit.Assert.assertEquals;
+
 import java.math.BigDecimal;
 
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
+import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.test.util.TestBase;
@@ -57,8 +60,8 @@ public class BigMoneyTranslationTest extends TestBase
 	public void testBigMoneyConverter() throws Exception
 	{
 		// fact.getTranslators().add(new BigDecimalStringTranslatorFactory());
-		fact.getTranslators().add(new JodaMoneyTranslatorFactory());
-		fact.register(HasBigMoney.class);
+		ObjectifyService.ofy().getFactory().getTranslators().add(new JodaMoneyTranslatorFactory());
+		ObjectifyService.ofy().getFactory().register(HasBigMoney.class);
 
 		HasBigMoney hbm = new HasBigMoney();
 		hbm.moneyAmount = org.joda.money.Money.of(CurrencyUnit.USD, new BigDecimal("32.25"));
@@ -74,15 +77,15 @@ public class BigMoneyTranslationTest extends TestBase
 
 		HasBigMoney fetched = this.putClearGet(hbm);
 
-		assert hbm.moneyAmount.equals(fetched.moneyAmount);
-		assert hbm.moneyAmountAll.equals(fetched.moneyAmountAll);
-		assert hbm.moneyAmountAllNoIndices.equals(fetched.moneyAmountAllNoIndices);
-		assert hbm.moneyAmountNoDisplayableAmount.equals(fetched.moneyAmountNoDisplayableAmount);
+		assertEquals(hbm.moneyAmount, fetched.moneyAmount);
+		assertEquals(hbm.moneyAmountAll, fetched.moneyAmountAll);
+		assertEquals(hbm.moneyAmountAllNoIndices, fetched.moneyAmountAllNoIndices);
+		assertEquals(hbm.moneyAmountNoDisplayableAmount, fetched.moneyAmountNoDisplayableAmount);
 
-		assert hbm.bigMoneyAmount.equals(fetched.bigMoneyAmount);
-		assert hbm.bigMoneyAmountAll.equals(fetched.bigMoneyAmountAll);
-		assert hbm.bigMoneyAmountAllNoIndices.equals(fetched.bigMoneyAmountAllNoIndices);
-		assert hbm.bigMoneyAmountNoDisplayableAmount.equals(fetched.bigMoneyAmountNoDisplayableAmount);
+		assertEquals(hbm.bigMoneyAmount, fetched.bigMoneyAmount);
+		assertEquals(hbm.bigMoneyAmountAll, fetched.bigMoneyAmountAll);
+		assertEquals(hbm.bigMoneyAmountAllNoIndices, fetched.bigMoneyAmountAllNoIndices);
+		assertEquals(hbm.bigMoneyAmountNoDisplayableAmount, fetched.bigMoneyAmountNoDisplayableAmount);
 
 	}
 

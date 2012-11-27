@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.googlecode.objectify.ObjectifyService;
 import com.sappenin.objectify.BaseObjectifyTest;
 import com.sappenin.objectify.shardedcounter.model.Counter;
 import com.sappenin.objectify.shardedcounter.model.CounterShard;
@@ -45,8 +46,8 @@ public class ShardedCounterServiceImplTest extends BaseObjectifyTest
 	{
 		super.setUp();
 
-		fact.register(Counter.class);
-		fact.register(CounterShard.class);
+		ObjectifyService.factory().register(Counter.class);
+		ObjectifyService.factory().register(CounterShard.class);
 	}
 
 	@After
