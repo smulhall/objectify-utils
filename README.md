@@ -6,11 +6,12 @@ This project contains several utility and extension classes to enhance <a href="
 Features
 ------
 
-+ <b>Enhanced Objectify Translators for Joda ReadableInstance (e.g., DateTime) Classes</b><br/>
-Load/Save entities with DateTime fields always set properly to UTC for consistent entity timezone control.
++ <b>Enhanced Objectify Translators for Joda ReadableInstance Types</b><br/>
+Ensure your entities have Date/Time properties that always use UTC for consistent load/store behavior.  <a href="https://github.com/sappenin/objectify-utils/blob/master/src/main/java/com/sappenin/objectify/translate/UTCReadableInstantTranslatorFactory.java">UTCReadableInstantTranslatorFactory</a> 
+handles loading and saving of any property with type <a href="http://joda-time.sourceforge.net/apidocs/org/joda/time/ReadableInstant.html">org.joda.time.ReadableInstance</a>.
 
-+ <b>Enhanced Objectify Annotationat and Translators for Joda "Money" types</b><br/>
-Store entities that have Money properties with ease.  See the "Benefits" section below.
++ <b>Enhanced Objectify Annotations and Translators for Joda "Money" Types</b><br/>
+Store entities with Joda-Money properties in interesting ways, fully controllable via field annotations.  See the <a href="https://github.com/sappenin/objectify-utils#benefits-of-new-money-translators">Benefits</a> section below.
 
 <b><i><u>Note: This library is not compatible with Objectify versions prior to version 4.0b1.</u></i></b>
 
