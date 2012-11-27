@@ -3,7 +3,18 @@ objectify-utils (Objectify Utilities for App Engine)
 
 This project contains several utility and extension classes to enhance <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a> with capabilities related large numbers and Money using Joda Money.
 
-Benefits
+Features
+------
+
++ <b>Enhanced Objectify Translators for Joda ReadableInstance (e.g., DateTime) Classes</b><br/>
+Load/Save entities with DateTime fields always set properly to UTC for consistent entity timezone control.
+
++ <b>Enhanced Objectify Annotationat and Translators for Joda "Money" types</b><br/>
+Store entities that have Money properties with ease.  See the "Benefits" section below.
+
+<b><i><u>Note: This library is not compatible with Objectify versions prior to version 4.0b1.</u></i></b>
+
+Benefits of New "Money" Translators
 ------
 
 + <b>Fully Indexable BigDecimal and Money Fields</b><br/>
@@ -20,8 +31,6 @@ JodaMoneyTranslatorFactory can store a currency-code for any Money/BigMoney obje
 
 + <b>Full Index Control and Field Name Customization</b><br/>
 Using the @BigDecimal and @Money annotations, you can control how your Number and Currency information is stored, what is indexed, and what each embedded field is called.
-
-<b><i><u>Note: This library is not compatible with Objectify versions prior to version 4.0b1.</u></i></b>
 
 
 Getting Started
