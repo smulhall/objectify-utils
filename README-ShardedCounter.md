@@ -1,7 +1,7 @@
 High Throughput ShardedCounter
 ===========================
 
-Objectify-utils includes a ShardedCounter implementation that utilizes Objectify 4.  The code as patterned off of the following <a href="https://developers.google.com/appengine/articles/sharding_counters">article from developer.google.com</a>, and the the rationale for a ShardedCounter is as follows (quoted from the linked article):
+Objectify-Utils includes a ShardedCounter implementation that utilizes Objectify 4.  The code is patterned off of the following <a href="https://developers.google.com/appengine/articles/sharding_counters">article</a> from developer.google.com, and the the rationale for a ShardedCounter is as follows (quoted from the linked article):
 
 > When developing an efficient application on Google App Engine, you need to pay attention to how often an entity is updated. While App Engine's datastore scales to support a huge number of entities, it is important to note that you can only expect to update any single entity or entity group about five times a second. That is an estimate and the actual update rate for an entity is dependent on several attributes of the entity, including how many properties it has, how large it is, and how many indexes need updating. While a single entity or entity group has a limit on how quickly it can be updated, App Engine excels at handling many parallel requests distributed across distinct entities, and we can take advantage of this by using sharding."
 
@@ -18,7 +18,7 @@ Sharded counters with large numbers of CounterShards can take some time to delet
 
 Getting Started
 ----------
-Sharded counters can be accessed via an implementation of <a href="">CounterService</a>.  Currently, the only implementation is <a href="">ShardedCounterService<a/>, which requires a TaskQueue (the "/default" queue is used by default) for Counter deletion.
+Sharded counters can be accessed via an implementation of <a href="">CounterService</a>.  Currently, the only implementation is <a href="">ShardedCounterService<a/>, which requires a TaskQueue (the "/default" queue is used by default) if Counter deletion is required.
 
 Queue Configuration
 ----------
@@ -29,7 +29,8 @@ Queue Configuration
 		</queue>
 	</queue-entries>
 
-Don't forget to add a URL mapping for the default queue, or for the queue mapping you specify below!  By default, the ShardedCounterService uses the default queue URL.  See <a href="https://developers.google.com/appengine/docs/java/taskqueue/overview-push#URL_Endpoints">here</a> for how to configure your push queue URL endpoints: 
+Don't forget to add a URL mapping for the default queue, or for the queue mapping you specify below!  By default, the ShardedCounterService uses the default queue URL.  See <a href="https://developers.google.com/appengine/docs/java/taskqueue/overview-push#URL_Endpoints">here</a> for how to configure your push queue URL endpoints.
+<i>Note that this queue is not required if Counter deletion will not be utilized by your application<i>.
 
 Objectify Entity Registration
 -----------

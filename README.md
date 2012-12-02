@@ -6,7 +6,7 @@ Objectify-Utils contain various utility and extension classes to augment <a href
 Table of Contents
 -------
 + <a href="https://github.com/sappenin/objectify-utils/blob/master/README-Translators.md">Enhanced Translators</a>
-+  <a href="https://github.com/sappenin/objectify-utils/blob/master/README-ShardedCounters.md">ShardedCounter Service</a>
++  <a href="https://github.com/sappenin/objectify-utils/blob/master/README-ShardedCounter.md">ShardedCounter Service</a>
 
 Features
 ------
