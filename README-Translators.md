@@ -8,7 +8,7 @@ Features
 Ensure your entities have Date/Time properties that always use UTC for consistent load/store behavior.  <a href="https://github.com/sappenin/objectify-utils/blob/master/src/main/java/com/sappenin/objectify/translate/UTCReadableInstantTranslatorFactory.java">UTCReadableInstantTranslatorFactory</a> 
 handles loading and saving of any property with type <a href="http://joda-time.sourceforge.net/apidocs/org/joda/time/ReadableInstant.html">org.joda.time.ReadableInstance</a>.
 
-+ <b>Enhanced Objectify Annotations and Translators for Joda "Money" Types</b><br/>
++ <b>Enhanced Annotations and Translators for Joda "Money" Types</b><br/>
 Store entities with Joda-Money properties in interesting ways, fully controllable via field annotations.  See the <a href="https://github.com/sappenin/objectify-utils#benefits-of-new-money-translators">Benefits</a> section below.
 
 

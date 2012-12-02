@@ -1,7 +1,12 @@
-objectify-utils (Objectify Utilities for App Engine)
+Objectify-Utils (Objectify Utilities for App Engine)
 ===========================
 
-This project contains several utility and extension classes to augment <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a>.  This library includes Objectify Translators for enhanced handling o large numbers, Joda-Money, and Joda-Time types.  In addition, it includes a ShardedCounter implementation for high-throughput+consistent counters backed by the GAE Datastore.
+Objectify-Utils contain various utility and extension classes to augment <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a>.  This library includes Objectify Translators for enhanced handling of large numbers, Joda-Money, and Joda-Time types.  In addition, it includes a ShardedCounter implementation for high-throughput+consistent counters backed by the GAE Datastore.
+
+Table of Contents
+-------
++ <a href="https://github.com/sappenin/objectify-utils/blob/master/README-Translators.md">Enhanced Translators</a>
++  <a href="https://github.com/sappenin/objectify-utils/blob/master/README-ShardedCounters.md">ShardedCounter Service</a>
 
 Features
 ------
@@ -10,7 +15,7 @@ Features
 Ensure your entities have Date/Time properties that always use UTC for consistent load/store behavior.  <a href="https://github.com/sappenin/objectify-utils/blob/master/src/main/java/com/sappenin/objectify/translate/UTCReadableInstantTranslatorFactory.java">UTCReadableInstantTranslatorFactory</a> 
 handles loading and saving of any property with type <a href="http://joda-time.sourceforge.net/apidocs/org/joda/time/ReadableInstant.html">org.joda.time.ReadableInstance</a>.  Read more under <a href="https://github.com/sappenin/objectify-utils/blob/master/README-Translators.md">Enhanced Translators</a>.
 
-+ <b>Enhanced Objectify Annotations and Translators for Joda "Money" Types</b><br/>
++ <b>Enhanced Annotations and Translators for Joda "Money" Types</b><br/>
 Store entities with Joda-Money properties in interesting ways, fully controllable via field annotations.  Read more under <a href="https://github.com/sappenin/objectify-utils/blob/master/README-Translators.md">Enhanced Translators</a>.
 
 + <b>High Throughput ShardedCounter Implementation</b><br/>
@@ -21,7 +26,7 @@ Allow for high-throughput counters backed by the HRD datastore.  Read more under
 Getting Started
 ----------
 
-First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/1.2.0.zip">objectify-utils-1.2.0.jar</a> and include it your application's classpath.
+First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/1.2.3.zip">objectify-utils-1.2.3.jar</a> and include it your application's classpath.
 
 Maven users should utilize the following repository and dependency instead:
 
@@ -35,7 +40,7 @@ Maven users should utilize the following repository and dependency instead:
     <dependency>
     	<groupId>com.sappenin.objectify</groupId>
 		<artifactId>objectify-utils</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.3</version>
     </dependency>
 
 Next, be sure to register any annotations that you plan to use, as follows:
