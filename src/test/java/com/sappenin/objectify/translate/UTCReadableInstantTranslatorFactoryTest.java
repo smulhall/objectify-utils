@@ -27,6 +27,11 @@ import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.test.util.TestBase;
 
+/**
+ * Test cases for {@link UTCReadableInstantTranslatorFactory}.
+ * 
+ * @author David Fuelling <sappenin@gmail.com>
+ */
 public class UTCReadableInstantTranslatorFactoryTest extends TestBase
 {
 	/** */

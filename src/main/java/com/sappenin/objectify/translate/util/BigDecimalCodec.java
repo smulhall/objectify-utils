@@ -51,7 +51,7 @@ import java.text.ParseException;
  * numbers which may be encoded.
  * 
  * @author ted stockwell
- * 
+ * @author David Fuelling <sappenin@gmail.com>
  */
 public class BigDecimalCodec
 {

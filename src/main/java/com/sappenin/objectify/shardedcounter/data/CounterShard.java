@@ -38,7 +38,7 @@ import com.sappenin.objectify.shardedcounter.data.base.AbstractEntity;
  * An individual shard is written to infrequently to allow the counter in
  * aggregate to be incremented rapidly.
  * 
- * @author david.fuelling@sappenin.com (David Fuelling)
+ * @author David Fuelling <sappenin@gmail.com>
  */
 @Entity
 @Getter

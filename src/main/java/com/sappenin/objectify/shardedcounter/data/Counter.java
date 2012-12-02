@@ -34,7 +34,7 @@ import com.sappenin.objectify.shardedcounter.data.base.AbstractEntity;
 /**
  * Represents a counter in the datastore and stores the number of shards.
  * 
- * @author david.fuelling@sappenin.com (David Fuelling)
+ * @author David Fuelling <sappenin@gmail.com>
  */
 @Entity
 @Getter

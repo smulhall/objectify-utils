@@ -31,8 +31,7 @@ import com.googlecode.objectify.annotation.Id;
  * An abstract base class for all sappenin-objectify-utils entities (data stored
  * to the datastore).
  * 
- * @author david
- * 
+ * @author David Fuelling <sappenin@gmail.com>
  */
 @Getter
 @Setter

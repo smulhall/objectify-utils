@@ -33,6 +33,8 @@ import com.googlecode.objectify.cache.AsyncCacheFilter;
  * @see <a
  *      href="http://code.google.com/appengine/docs/java/howto/unittesting.html">Unit
  *      Testing in Appengine</a>
+ * 
+ * @author David Fuelling <sappenin@gmail.com>
  */
 public class BaseObjectifyTest
 {

@@ -27,7 +27,7 @@ import org.junit.Test;
  * Tests the number encoding scheme
  * 
  * @author ted stockwell
- * @author David Fuelling
+ * @author David Fuelling <sappenin@gmail.com>
  */
 public class BigDecimalCodecTest
 {

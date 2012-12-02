@@ -30,8 +30,7 @@ import com.sappenin.objectify.shardedcounter.service.CounterService;
  * A duplicate of {@linik ShardedCounterServiceTest} where Memcache is disabled
  * for all tests via the Capabilities disablement feature.
  * 
- * @author david
- * 
+ * @author David Fuelling <sappenin@gmail.com>
  */
 public class ShardedCounterServiceWithMemcacheDisabledTest extends ShardedCounterServiceTest
 {

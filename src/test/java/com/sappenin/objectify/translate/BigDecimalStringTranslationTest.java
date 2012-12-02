@@ -29,7 +29,7 @@ import com.googlecode.objectify.test.util.TestBase;
 /**
  * Tests of type conversions.
  * 
- * @author David Fuelling
+ * @author David Fuelling <sappenin@gmail.com>
  */
 public class BigDecimalStringTranslationTest extends TestBase
 {

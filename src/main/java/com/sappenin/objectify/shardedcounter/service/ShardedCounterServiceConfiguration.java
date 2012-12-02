@@ -24,6 +24,11 @@ import lombok.ToString;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * A Configuration class for {@link ShardedCounterService}.
+ * 
+ * @author David Fuelling <sappenin@gmail.com>
+ */
 @Getter
 @ToString
 @EqualsAndHashCode

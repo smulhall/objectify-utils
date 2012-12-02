@@ -21,8 +21,7 @@ import com.sappenin.objectify.shardedcounter.data.Counter;
 /**
  * A service for storing, deleting, and interacting with Counters.
  * 
- * @author david
- * 
+ * @author David Fuelling <sappenin@gmail.com>
  */
 public interface CounterService
 {

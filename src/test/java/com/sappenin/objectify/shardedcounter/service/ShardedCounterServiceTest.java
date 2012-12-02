@@ -44,6 +44,11 @@ import com.sappenin.objectify.shardedcounter.data.Counter.CounterStatus;
 import com.sappenin.objectify.shardedcounter.data.CounterShard;
 import com.sappenin.objectify.translate.UTCReadableInstantTranslatorFactory;
 
+/**
+ * Test class for {@link ShardedCounterService}.
+ * 
+ * @author David Fuelling <sappenin@gmail.com>
+ */
 public class ShardedCounterServiceTest extends BaseObjectifyTest
 {
 	private static final String DELETE_COUNTER_SHARD_QUEUE_NAME = "deleteCounterShardQueue";
