@@ -30,7 +30,8 @@ Queue Configuration
 	</queue-entries>
 
 Don't forget to add a URL mapping for the default queue, or for the queue mapping you specify below!  By default, the ShardedCounterService uses the default queue URL.  See <a href="https://developers.google.com/appengine/docs/java/taskqueue/overview-push#URL_Endpoints">here</a> for how to configure your push queue URL endpoints.
-<i>Note that this queue is not required if Counter deletion will not be utilized by your application<i>.
+
+<i><b>Note that this queue is not required if Counter deletion will not be utilized by your application</b></i>.
 
 Objectify Entity Registration
 -----------
@@ -39,34 +40,32 @@ Next, be sure to register the entities that are required by the CounterService, 
 	ObjectifyService.factory().getTranslators().add(new Counter());
 	ObjectifyService.factory().getTranslators().add(new CounterShard());
 
-Setup using Spring
+Default Service Setup using Spring
 -------
 To utilize the ShardedCounterService with Spring, the following will initialize the service with a default configuration:
-
-<b>ShardedCounterService</b> as follows, and you don't need any of the Spring beans defined above:
 
 	<bean id="shardedCounterService"
 		class="com.sappenin.objectify.shardedcounter.service.ShardedCounterService">
 	</bean>
 
-Custom Configuration using Spring
+Custom Service Configuration using Spring
 -------
 If you want to control the configuration of the ShardedCounterService, you will need to configure an instance of <b>ShardedCounterServiceConfiguration.Builder</b> as follows:
 
 	<bean id="shardedCounterServiceConfigurationBuilder"
 		class="com.sappenin.objectify.shardedcounter.service.ShardedCounterServiceConfiguration.Builder">
 
-		<!-- Enter the name of the Queue for counter-deletion -->
+		<!-- The number of shards to create when a new counter is created -->
 		<property name="numInitialShards">
 			<value>1</value>
 		</property>
 
-		<!-- Enter the name of the Queue for counter-deletion.  If this property is omitted, the default queue is used -->
+		<!-- The name of the Queue for counter-deletion.  If this property is omitted, the default appengine queue is used -->
 		<property name="deleteCounterShardQueueName">
 			<value>deleteCounterShardQueue</value>
 		</property>
 
-		<!-- This defaults to the default queue path.   If this property is ommitted, the default queue is used -->
+		<!-- The URL callback path that appengine will use to process delete-counter message.  If this property is ommitted, the default appengine queue is used -->
 		<property name="relativeUrlPathForDeleteTaskQueue">
 			<value>/_ah/queue/deleteCounterShardQueue</value>
 		</property>
