@@ -19,31 +19,40 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.sappenin.objectify.shardedcounter.model;
+package com.sappenin.objectify.shardedcounter.data;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
+import com.google.common.base.Preconditions;
 import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Unindex;
+import com.sappenin.objectify.shardedcounter.data.base.AbstractEntity;
 
 /**
- * Represents a discrete shard belonging to the named counter.
- * 
+ * Represents a discrete shard belonging to a named counter.<br/>
+ * <br/>
  * An individual shard is written to infrequently to allow the counter in
  * aggregate to be incremented rapidly.
  * 
  * @author david.fuelling@sappenin.com (David Fuelling)
  */
 @Entity
+@Getter
+@Setter
 @Unindex
-public class CounterShard
+public class CounterShard extends AbstractEntity
 {
-	// The counter name is the name of the counter (for easy lookup via a
-	// starts-with query) combined with the shardNumber. E.g., "CounterName-2"
-	// would be the counter with name "CounterName" and Shard number 2.
-	@Id
-	private String counterName;
+	static final String COUNTER_SHARD_KEY_SEPARATOR = "-";
 
-	// The total of this shard's counter
+	// The id of a CounterShard is the name of the counter (for easy lookup via
+	// a starts-with query) combined with the shardNumber. E.g., "CounterName-2"
+	// would be the counter with name "CounterName" and Shard number 2.
+
+	// The total of this shard's counter (not the total counter count)
 	private long count;
 
 	/**
@@ -63,9 +72,10 @@ public class CounterShard
 	 * @param counterName
 	 * @param shardNumber
 	 */
-	public CounterShard(String counterName)
+	public CounterShard(final String counterName, final int shardNumber)
 	{
-		this.counterName = counterName;
+		Preconditions.checkNotNull(counterName);
+		setId(counterName + COUNTER_SHARD_KEY_SEPARATOR + shardNumber);
 	}
 
 	// /////////////////////////
@@ -73,36 +83,22 @@ public class CounterShard
 	// /////////////////////////
 
 	/**
-	 * @return the counterName
+	 * @return The last dateTime that an increment occurred.
 	 */
-	public String getCounterName()
+	public DateTime getLastIncrement()
 	{
-		return counterName;
-	}
-
-	// TODO Remove this setter?
-	/**
-	 * @param counterName the counterName to set
-	 */
-	public void setCounterName(String counterName)
-	{
-		this.counterName = counterName;
+		return getUpdatedDateTime();
 	}
 
 	/**
-	 * @return the count
-	 */
-	public long getCount()
-	{
-		return count;
-	}
-
-	/**
-	 * @param count the count to set
+	 * Set the amount of this shard with a new {@code count}.
+	 * 
+	 * @param count
 	 */
 	public void setCount(long count)
 	{
 		this.count = count;
+		this.setUpdatedDateTime(DateTime.now(DateTimeZone.UTC));
 	}
 
 }

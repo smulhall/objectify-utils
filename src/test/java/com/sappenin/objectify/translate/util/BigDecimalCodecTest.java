@@ -5,9 +5,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.junit.Assert;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 /**
  * Tests the number encoding scheme

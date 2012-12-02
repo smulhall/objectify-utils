@@ -19,11 +19,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.sappenin.objectify.shardedcounter.model;
+package com.sappenin.objectify.shardedcounter.data;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Unindex;
+import com.sappenin.objectify.shardedcounter.data.base.AbstractEntity;
 
 /**
  * Represents a counter in the datastore and stores the number of shards.
@@ -31,14 +37,35 @@ import com.googlecode.objectify.annotation.Unindex;
  * @author david.fuelling@sappenin.com (David Fuelling)
  */
 @Entity
+@Getter
+@Setter
 @Unindex
-public class Counter
+public class Counter extends AbstractEntity
 {
-	@Id
-	private String counterName;
+
+	// Used by the Get methods to indicate the state of a Counter while it is
+	// deleting.
+	public static enum CounterStatus
+	{
+		AVAILABLE, DELETING; // INCREMENTING, DECREMENTING?
+	};
+
+	// The counter name is the @Id of this entity, found in AbstractEntity
+
+	// This is an approximateCount, as aggregated from the CounterShards. It is
+	// ignored because it is used as a read-only value. NEVER
+	// SET THIS VALUE EXTERNALLY AND TRY TO SAVE IT TO THE DATASTORE. CALL
+	// COUNTERSERVICE#INCREMENT OR DECREMENT INSTEAD.
+	@com.googlecode.objectify.annotation.Ignore
+	private long approximateCount;
+
 	// This is necessary to know in order to be able to evenly distribute
 	// amongst all shards for a given counterName
 	private int numShards;
+
+	// This is AVAILABLE by default, which means it can be incremented and
+	// decremented
+	private CounterStatus counterStatus = CounterStatus.AVAILABLE;
 
 	/**
 	 * Default Constructor for Objectify
@@ -59,7 +86,7 @@ public class Counter
 	 */
 	public Counter(String counterName, int numShards)
 	{
-		this.counterName = counterName;
+		super(counterName);
 		this.numShards = numShards;
 	}
 
@@ -68,35 +95,17 @@ public class Counter
 	// //////////////////////////////
 
 	/**
-	 * @return the counterName
+	 * @return The name of this counter
 	 */
 	public String getCounterName()
 	{
-		return counterName;
+		return this.getId();
 	}
 
-	/**
-	 * @param counterName the counterName to set
-	 */
-	public void setCounterName(String counterName)
-	{
-		this.counterName = counterName;
-	}
-
-	/**
-	 * @return the numShards
-	 */
-	public int getNumShards()
-	{
-		return numShards;
-	}
-
-	/**
-	 * @param numShards the numShards to set
-	 */
 	public void setNumShards(int numShards)
 	{
 		this.numShards = numShards;
+		this.setUpdatedDateTime(new DateTime(DateTimeZone.UTC));
 	}
 
 }

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sappenin.objectify</groupId>
 	<artifactId>objectify-utils</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.3-SNAPSHOT</version>
 	<name>objectify-utils</name>
 	<description>Objectify-Appengine utility classes from Sappenin</description>
 	<packaging>jar</packaging>
@@ -20,95 +20,200 @@
 	</contributors>
 
 	<pluginRepositories>
-		<pluginRepository>
-			<id>maven-gae-plugin-repo</id>
-			<name>maven-gae-plugin repository</name>
-			<url>
-                http://maven-gae-plugin.googlecode.com/svn/repository
-            </url>
-		</pluginRepository>
+
 	</pluginRepositories>
 
 	<repositories>
-		<repository>
-			<id>objectify-appengine</id>
-			<url>http://objectify-appengine.googlecode.com/svn/maven</url>
-		</repository>
+		<!-- <repository> <id>objectify-appengine</id> <url>http://objectify-appengine.googlecode.com/svn/maven</url> 
+			</repository> -->
 	</repositories>
 
 	<properties>
-
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<gae.version>1.7.3</gae.version>
-		<joda.money.version>0.6</joda.money.version>
 		<objectify.version>4.0b1</objectify.version>
+
+		<joda.money.version>0.6</joda.money.version>
+		<joda.time.version>2.1</joda.time.version>
+		<guava.version>13.0</guava.version>
 
 		<maven.gae.plugin.version>0.9.5</maven.gae.plugin.version>
 		<maven.compiler.plugin.version>2.5.1</maven.compiler.plugin.version>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- ############## -->
+			<!-- Provided Scope -->
+			<!-- ############## -->
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>0.11.6</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- GAE libraries for local testing as described here: http://code.google.com/appengine/docs/java/howto/unittesting.html 
+				and for class compilation -->
+			<dependency>
+				<groupId>com.google.appengine</groupId>
+				<artifactId>appengine-api-stubs</artifactId>
+				<version>${gae.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.appengine</groupId>
+				<artifactId>appengine-tools-sdk</artifactId>
+				<version>${gae.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.appengine</groupId>
+				<artifactId>appengine-testing</artifactId>
+				<version>${gae.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<!-- ############## -->
+			<!-- Test Scope -->
+			<!-- ############## -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.11</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>1.9.5</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- ############## -->
+			<!-- Compile Scope -->
+			<!-- ############## -->
+
+			<dependency>
+				<groupId>com.googlecode.objectify</groupId>
+				<artifactId>objectify</artifactId>
+				<version>${objectify.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.joda</groupId>
+				<artifactId>joda-money</artifactId>
+				<version>${joda.money.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.1</version>
+			</dependency>
+
+			<dependency>
+				<!-- http://findbugs.googlecode.com/svn/trunk/ -->
+				<groupId>com.google.code.findbugs</groupId>
+				<artifactId>jsr305</artifactId>
+				<version>2.0.1</version>
+			</dependency>
+
+
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 
-		<!-- GAE Dependencies -->
+		<!-- ############## -->
+		<!-- Provided Scope -->
+		<!-- ############## -->
+
+		<!-- Lombok is a compile-time dependency, and is not needed during runtime -->
 		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-api-1.0-sdk</artifactId>
-			<version>${gae.version}</version>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.googlecode.objectify</groupId>
-			<artifactId>objectify</artifactId>
-			<version>${objectify.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.joda</groupId>
-			<artifactId>joda-money</artifactId>
-			<version>${joda.money.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- TESTING -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- GAE libraries for local testing as described here: http://code.google.com/appengine/docs/java/howto/unittesting.html -->
+		<!-- GAE libraries for local testing as described here: http://code.google.com/appengine/docs/java/howto/unittesting.html 
+			and for class compilation -->
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-stubs</artifactId>
-			<version>${gae.version}</version>
-			<scope>test</scope>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-tools-sdk</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-testing</artifactId>
-			<version>${gae.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- ############## -->
+		<!-- Test Scope -->
+		<!-- ############## -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- ############## -->
+		<!-- Compile Scope -->
+		<!-- ############## -->
+
+		<dependency>
+			<groupId>com.googlecode.objectify</groupId>
+			<artifactId>objectify</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.joda</groupId>
+			<artifactId>joda-money</artifactId>
+		</dependency>
+
+		<dependency>
+			<!-- http://findbugs.googlecode.com/svn/trunk/ -->
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
 		</dependency>
 
 	</dependencies>
 
-
-
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.12.4</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

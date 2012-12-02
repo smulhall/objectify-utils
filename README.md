@@ -1,43 +1,27 @@
 objectify-utils (Objectify Utilities for App Engine)
 ===========================
 
-This project contains several utility and extension classes to enhance <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a> with capabilities related to large numbers, Joda-Money, and Joda-Time types.
+This project contains several utility and extension classes to augment <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a>.  This library includes Objectify Translators for enhanced handling o large numbers, Joda-Money, and Joda-Time types.  In addition, it includes a ShardedCounter implementation for high-throughput+consistent counters backed by the GAE Datastore.
 
 Features
 ------
 
 + <b>Enhanced Objectify Translators for Joda ReadableInstance Types</b><br/>
 Ensure your entities have Date/Time properties that always use UTC for consistent load/store behavior.  <a href="https://github.com/sappenin/objectify-utils/blob/master/src/main/java/com/sappenin/objectify/translate/UTCReadableInstantTranslatorFactory.java">UTCReadableInstantTranslatorFactory</a> 
-handles loading and saving of any property with type <a href="http://joda-time.sourceforge.net/apidocs/org/joda/time/ReadableInstant.html">org.joda.time.ReadableInstance</a>.
+handles loading and saving of any property with type <a href="http://joda-time.sourceforge.net/apidocs/org/joda/time/ReadableInstant.html">org.joda.time.ReadableInstance</a>.  Read more under <a href="https://github.com/sappenin/objectify-utils/blob/master/README-Translators.md">Enhanced Translators</a>.
 
 + <b>Enhanced Objectify Annotations and Translators for Joda "Money" Types</b><br/>
-Store entities with Joda-Money properties in interesting ways, fully controllable via field annotations.  See the <a href="https://github.com/sappenin/objectify-utils#benefits-of-new-money-translators">Benefits</a> section below.
+Store entities with Joda-Money properties in interesting ways, fully controllable via field annotations.  Read more under <a href="https://github.com/sappenin/objectify-utils/blob/master/README-Translators.md">Enhanced Translators</a>.
+
++ <b>High Throughput ShardedCounter Implementation</b><br/>
+Allow for high-throughput counters backed by the HRD datastore.  Read more under <a href="https://github.com/sappenin/objectify-utils/blob/master/README-ShardedCounters.md">ShardedCounter Service</a>.
 
 <b><i><u>Note: This library is not compatible with Objectify versions prior to version 4.0b1.</u></i></b>
-
-Benefits of New "Money" Translators
-------
-
-+ <b>Fully Indexable BigDecimal and Money Fields</b><br/>
-Whether your property is of type BigDecimal, Money, or BigMoney, the Translators in objectify-utils store all number values in an encoded String-format that is lexigraphically equivalent to numeric values when it comes to comparison.  This encoding format supports negative values, and means currency values can be fully indexed, sorted, and queried natively via the Datastore.   
-
-+ <b>Arbitrary Precision</b><br/>
-Objectify-utils translators allows for arbitrary number-precision across and inside entities.  For example, one "Car" entity with a "value" property of "$25,000.00" could be stored while another "Car" could have a more precise value of "$25,000.253".
-
-+ <b>Anotation Support for Joda Money and BigMoney</b><br/>
-Joda-Money and Joda-BigMoney both implement a common interface (BigMoneyProvider), making it possible to utilize the same translator for both object types.  
-
-+ <b>Full Currency Code Support</b><br/>
-JodaMoneyTranslatorFactory can store a currency-code for any Money/BigMoney object in a different embedded field that is related to the currency value amount.
-
-+ <b>Full Index Control and Field Name Customization</b><br/>
-Using the @BigDecimal and @Money annotations, you can control how your Number and Currency information is stored, what is indexed, and what each embedded field is called.
-
 
 Getting Started
 ----------
 
-First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/1.1.0.zip">objectify-utils-1.1.0.jar</a> and include it your application's classpath.
+First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/1.2.0.zip">objectify-utils-1.2.0.jar</a> and include it your application's classpath.
 
 Maven users should utilize the following repository and dependency instead:
 
@@ -51,48 +35,14 @@ Maven users should utilize the following repository and dependency instead:
     <dependency>
     	<groupId>com.sappenin.objectify</groupId>
 		<artifactId>objectify-utils</artifactId>
-		<version>1.1.0</version>
+		<version>1.2.0</version>
     </dependency>
 
-Next, be sure to register each annotation that you plan to use, as follows:
+Next, be sure to register any annotations that you plan to use, as follows:
 
 	ObjectifyService.factory().getTranslators().add(new BigDecimalStringTranslatorFactory());
 	ObjectifyService.factory().getTranslators().add(new JodaMoneyTranslatorFactory());
-
-
-BigDecimal Entity Fields
--------
-To persist properties of type java.math.BigDecimal, annotate your field with the @com.sappenin.objectify.annotations.BigDecimal.  Be sure to not confuse this with the default BigDecimal support provided by Objectify which doesn't handle indexing properly (see <a href="http://code.google.com/p/objectify-appengine/source/browse/trunk/src/com/googlecode/objectify/impl/translate/opt/BigDecimalLongTranslatorFactory.java">here</a>).    
-
-Example configuration:
-
-    @Entity
-    public class OfyEntity
-	{
-   		
-   		... //Rest of Objectify4 Entity definition
-   	
-   		@BigDecimal
-    	BigDecimal bigDecimal;
-	}
-
-Joda-Money  Entity Fields
--------
-To persist properties of type com.joda.money.Money or com.joda.money.BigMoney, annotate your field with the @com.sappenin.objectify.annotations.Money. 
-
-Example configuration:
-
-	@Entity
-    public class OfyEntity
-	{
-   		
-   		... //Rest of Objectify4 Entity definition
-   	
-    	@Money
-    	BigMoney moneyAmount;
-
-	}
-
+	ObjectifyService.factory().getTranslators().add(new UTCReadableInstantTranslatorFactory());
     
 Authors
 -------
