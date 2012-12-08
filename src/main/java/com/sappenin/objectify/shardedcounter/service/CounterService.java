@@ -29,7 +29,9 @@ public interface CounterService
 
 	/**
 	 * Create a new Counter with a default number of shards. If the counter
-	 * already exists, then this function will throw a runtime exception.
+	 * already exists, then this function return the pre-existing counter unless
+	 * the counter has a {@link CounterStatus} of {@link CounterStatus#DELETING}
+	 * , in which case a runtime exception will be thrown.
 	 * 
 	 * @param counterName
 	 * @return
@@ -58,18 +60,33 @@ public interface CounterService
 	 * 
 	 * @param counterName
 	 * @param amount The amount to increment by (positive or negative)
-	 * @return An Optional Counter with the new count
+	 * @return A Counter with the new count
+	 * @throws NullPointerException if the {@code counterName} is null.
+	 * @throws IllegalArgumentException if the {@code counterName} is "blank"
+	 *             (i.e., null, empty, or empty spaces).
+	 * @throws IllegalArgumentException if the {@code amount} is negative.
+	 * @throws RuntimeException if the counter does not exist in the Datastore.
+	 * @throws RuntimeException if the counter does exist in the Datastore but
+	 *             has a {@link CounterStatus} of {@code CounterStatus#DELETING}
+	 *             .
 	 */
-	public Optional<Counter> increment(final String counterName, final long amount);
+	public Counter increment(final String counterName, final long amount);
 
 	/**
 	 * Decrement the value of the sharded counter with name {@code counterName}
 	 * by 1.
 	 * 
 	 * @param counterName
-	 * @return An Optional Counter with the new count
+	 * @return An Counter with the new count
+	 * @throws NullPointerException if the {@code counterName} is null.
+	 * @throws IllegalArgumentException if the {@code counterName} is "blank"
+	 *             (i.e., null, empty, or empty spaces).
+	 * @throws RuntimeException if the counter does not exist in the Datastore.
+	 * @throws RuntimeException if the counter does exist in the Datastore but
+	 *             has a {@link CounterStatus} of {@code CounterStatus#DELETING}
+	 *             .
 	 */
-	public Optional<Counter> decrement(final String counterName);
+	public Counter decrement(final String counterName);
 
 	/**
 	 * Provided here for convenience as a callback method that a task queue

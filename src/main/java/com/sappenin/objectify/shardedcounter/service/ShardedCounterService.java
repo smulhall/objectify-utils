@@ -21,6 +21,7 @@
  */
 package com.sappenin.objectify.shardedcounter.service;
 
+import java.util.ConcurrentModificationException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -167,10 +168,12 @@ public class ShardedCounterService implements CounterService
 		{
 			public Counter run()
 			{
-				// If a counter already exists, then an exception should be
-				// thrown.
+				// If a counter already exists, then this 'create' operation
+				// should be benign unless the counter is in the "DELETING"
+				// phase. In that case, an exception should be
+				// thrown
 				Counter dsCounter = ObjectifyService.ofy().load().key(counterKey).get();
-				if (dsCounter != null)
+				if (dsCounter != null && dsCounter.getCounterStatus() == CounterStatus.DELETING)
 				{
 					// We throw this exception because a particular counter may
 					// be in the deleting stage, and we don't want to allow
@@ -203,24 +206,14 @@ public class ShardedCounterService implements CounterService
 	}
 
 	@Override
-	public Optional<Counter> increment(final String counterName, final long amount)
+	public Counter increment(final String counterName, final long amount)
 	{
 		Preconditions.checkNotNull(counterName);
 		Preconditions.checkArgument(!StringUtils.isBlank(counterName));
 		Preconditions.checkArgument(amount > 0, "Counter increments must be positive numbers!");
 
 		Optional<Counter> optCounter = this.getCounter(counterName);
-		if (!optCounter.isPresent())
-		{
-			throw new RuntimeException("Can't increment a counter \"" + counterName
-				+ "\" that doesn't exist.  Please #create this counter first!");
-		}
-
-		if (optCounter.get().getCounterStatus() == CounterStatus.DELETING)
-		{
-			throw new RuntimeException("Can't increment counter \"" + counterName
-				+ "\" because it is currently being deleted!");
-		}
+		counterPreconditionChecks(counterName, optCounter, "increment");
 
 		// ///////////
 		// Increment
@@ -271,9 +264,9 @@ public class ShardedCounterService implements CounterService
 		// Increment this counter in memcache atomically
 		// /////////////////
 		long newAmount = incrementMemcacheAtomic(counterName, amountIncremented.longValue());
-		optCounter.get().setApproximateCount(newAmount);
 
-		return optCounter;
+		optCounter.get().setApproximateCount(newAmount);
+		return optCounter.get();
 	}
 
 	/**
@@ -288,131 +281,168 @@ public class ShardedCounterService implements CounterService
 	 * @return
 	 */
 	@Override
-	public Optional<Counter> decrement(final String counterName)
+	public Counter decrement(final String counterName)
 	{
 		Preconditions.checkNotNull(counterName);
 		Preconditions.checkArgument(!StringUtils.isBlank(counterName));
 
 		Optional<Counter> optCounter = this.getCounter(counterName);
+		counterPreconditionChecks(counterName, optCounter, "decrement");
+		if (optCounter.get().getApproximateCount() <= 0)
+		{
+			logger
+				.warning("Attempted to decrement Counter \"" + counterName + "\" but its count was already zero (0)!");
+			return optCounter.get();
+		}
+
+		// Try a random shard at first -- this will generally work, but if it
+		// fails the code below will kick-in, which is slighlty less efficient
+		// since it scans through all of the shards and will generally bias the
+		// lower-numbered shards.
+
+		long returnablePostDecrementCounterAmount = 0L;
+
+		// Find how many shards are in this counter.
+		final int currentNumShards = getShardCount(counterName);
+		// Choose the shard randomly from the available shards.
+		final int randomShardNum = generator.nextInt(currentNumShards);
+
+		try
+		{
+			// Try to decrement a random shard. If no exception is thrown, then
+			// this function is complete. Return the amount decremented.
+			returnablePostDecrementCounterAmount = this.doDecrementInTx(counterName, randomShardNum);
+		}
+		catch (NonViableDecrementException nvde)
+		{
+			logger.warning("CounterShard " + randomShardNum + " for CounterName " + counterName
+				+ " is a candidate for deletion because it was not able to be decremented!");
+
+			// The random shard above did not have enough in "count" in it to
+			// decrement fully, so cycle through all shards to find one to
+			// decrement.
+			boolean successfulDecrement = false;
+			for (int i = 0; i < currentNumShards; i++)
+			{
+				try
+				{
+					// Shard numbers start at 0
+					returnablePostDecrementCounterAmount = this.doDecrementInTx(counterName, i);
+					successfulDecrement = true;
+					break;
+				}
+				catch (NonViableDecrementException nvde2)
+				{
+					logger.warning("CounterShard " + i + " for CounterName " + counterName
+						+ " is a candidate for deletion because it was not able to be decremented!");
+					successfulDecrement = false;
+					continue;
+				}
+			}
+
+			if (!successfulDecrement)
+			{
+				throw new RuntimeException("No suitable shards were found while decrementing counter \"" + counterName
+					+ "\" with approximate shard-count of " + currentNumShards);
+			}
+		}
+
+		// Rely on memcache to return this counter, especially if this counter
+		// might be under contention.
+		optCounter.get().setApproximateCount(returnablePostDecrementCounterAmount);
+		return optCounter.get();
+	}
+
+	/**
+	 * Helper method for checking the
+	 * 
+	 * @param counterName
+	 * @param optCounter
+	 */
+	private void counterPreconditionChecks(final String counterName, Optional<Counter> optCounter, String verb)
+	{
 		if (!optCounter.isPresent())
 		{
-			throw new RuntimeException("Can't decrement a counter \"" + counterName
+			throw new RuntimeException("Can't " + verb + " a counter \"" + counterName
 				+ "\" that doesn't exist.  Please #create this counter first!");
 
 		}
 
 		if (optCounter.get().getCounterStatus() == CounterStatus.DELETING)
 		{
-			throw new RuntimeException("Can't decrement counter \"" + counterName
+			throw new RuntimeException("Can't " + verb + " counter \"" + counterName
 				+ "\" because it is currently being deleted!");
 		}
+	}
 
-		if (optCounter.get().getApproximateCount() <= 0)
+	/**
+	 * Attempt to load and decrement a Datastore {@link CounterShard} in a
+	 * single transaction.
+	 * 
+	 * @param counterShardKey
+	 * @return The new counter total from memcache after decrementing
+	 * @throws NonViableDecrementException If the post-decrement counter update
+	 *             was unable to be completed because there was either a
+	 *             non-existent shard or the shard didn't have enough count.
+	 *             Note that this exception is not thrown if a
+	 *             {@link ConcurrentModificationException} is encountered by
+	 *             Objectify. In that case, the operation will simply be retried
+	 *             until successful.
+	 */
+	private long doDecrementInTx(final String counterName, final int counterShardNumber)
+			throws NonViableDecrementException
+	{
+		final Key<CounterShard> counterShardKey = new CounterShard(counterName, counterShardNumber).getTypedKey();
+		final Long amountDecremented = ObjectifyService.ofy().transact(new Work<Long>()
 		{
-			logger
-				.warning("Attempted to decrement Counter \"" + counterName + "\" but its count was already zero (0)!");
-			return optCounter;
-		}
-
-		// Get the Shard we want to use, and then Decrement only that one in a
-		// TX
-
-		// Find how many shards are in this counter.
-		final int currentNumShards = getShardCount(counterName);
-
-		// Choose the shard randomly from the available shards.
-		final int randomShardNum = generator.nextInt(currentNumShards);
-
-		CounterShard counterShardToDecrement = null;
-		Optional<CounterShard> optDSCounterShard = getCounterShardFromDS(counterName, randomShardNum);
-		if (optDSCounterShard.isPresent())
-		{
-			if (optDSCounterShard.get().getCount() > 0)
+			@Override
+			public Long run()
 			{
-				counterShardToDecrement = optDSCounterShard.get();
-			}
-			else
-			{
-				logger.warning("Random Shard Number " + randomShardNum + " existed in the Datastore for CounterName "
-					+ counterName + " but its count was already zero.  Retrying all the rest of the Shard Numbers...");
-			}
-		}
-		else
-		{
-			logger.warning("Random Shard Number " + randomShardNum + " did not exist in the Datastore for CounterName "
-				+ counterName + ".  Retrying with a random Shard Number...");
-		}
-
-		// The random shard above did not have enough in it to
-		// decrement fully, so cycle through all shards to find
-		// one to decrement
-
-		if (counterShardToDecrement == null)
-		{
-			for (int i = 0; i < currentNumShards; i++)
-			{
-				// Shard numbers start at 0
-				optDSCounterShard = getCounterShardFromDS(counterName, i);
+				Optional<CounterShard> optDSCounterShard = getCounterShardFromDS(counterShardKey);
 				if (optDSCounterShard.isPresent())
 				{
-					if (optDSCounterShard.get().getCount() > 0)
+					if (optDSCounterShard.get().getCount() <= 0)
 					{
-						// A shard with positive count (i.e., decrementable) was
-						// found, so use it below.
-						counterShardToDecrement = optDSCounterShard.get();
-						break;
-					}
-					else
-					{
-						// Delete the shard, and look for another one.
-						logger.warning("CounterShard " + i + " for CounterName " + counterName
-							+ " is a candidate for deletion!");
+						throw new NonViableDecrementException(
+							"Random Shard \""
+								+ counterShardKey.getId()
+								+ " \" existed in the Datastore  but its count was already zero.  Aborting decrement for this shard, possibly trying another!");
 					}
 				}
-			}
-		}
-
-		if (counterShardToDecrement != null && counterShardToDecrement.getCount() > 0)
-		{
-			final CounterShard finalCounterShard = counterShardToDecrement;
-			final Long amountDecremented = ObjectifyService.ofy().transact(new Work<Long>()
-			{
-				@Override
-				public Long run()
+				else
 				{
-					finalCounterShard.setCount(finalCounterShard.getCount() - 1);
-					// Use of now() is required to make the memcache
-					// sync code below function properly.
-					logger.fine("Saving CounterShard for Decrement with count " + finalCounterShard.getCount());
-					ObjectifyService.ofy().save().entity(finalCounterShard).now();
-					return new Long(1L);
+					throw new NonViableDecrementException(
+						"Random Shard \""
+							+ counterShardKey.getId()
+							+ "\" did not exist in the Datastore.  Aborting decrement for this shard, possibly trying another!");
 				}
-			});
 
-			// We use the "amountDecremented" to pause this thread until the TX
-			// Future returns. This is because we don't want to increment
-			// memcache (below) until the TX has completed. However, the
-			// concurrency exception (if any) in the Runnable above won't get
-			// thrown until the TX commit is tried, and by that point there's no
-			// mechanism to rollback the memcache counter. Using this mechanism,
-			// we can guarantee that the thread won't make it here until the TX
-			// above commits.
+				CounterShard counterShard = optDSCounterShard.get();
+				counterShard.setCount(counterShard.getCount() - 1);
+				// Use of now() is required to make the memcache
+				// sync code below function properly.
+				logger.fine("Saving CounterShard for Decrement with count " + counterShard.getCount());
+				ObjectifyService.ofy().save().entity(counterShard).now();
 
-			// Decrement this counter in memcache, but only if un-touched
-			long newAmount = incrementMemcacheAtomic(counterName, (amountDecremented * -1));
-			optCounter.get().setApproximateCount(newAmount);
-		}
-		else
-		{
-			Counter counter = optCounter.get();
-			if (counter.getApproximateCount() > 0)
-			{
-				throw new RuntimeException("No suitable shards were found for decrementing counter \"" + counterName
-					+ "\" with approximate count of " + counter.getApproximateCount());
+				return new Long(1L);
 			}
-		}
+		});
 
-		return optCounter;
+		// We use the "amountDecremented" to pause this thread until the TX
+		// Future returns. This is because we don't want to decrement
+		// memcache (below) until the TX has completed. However, the
+		// concurrency exception (if any) in the Runnable above won't get
+		// thrown until the TX commit is tried, and by that point there's no
+		// mechanism to rollback the memcache counter. Using this mechanism,
+		// we can guarantee that the thread won't make it here until the TX
+		// above commits properly without throwing an Exception
+
+		// Decrement this counter in memcache, but only if un-touched
+		long newAmount = incrementMemcacheAtomic(counterName, (amountDecremented * -1));
+
+		// Return the memcache amount because the caller already knows how much
+		// the decrement amount was supposed to be
+		return newAmount;
 	}
 
 	/**
@@ -643,7 +673,19 @@ public class ShardedCounterService implements CounterService
 		try
 		{
 			Key<Counter> counterKey = Key.create(Counter.class, counterName);
-			// No TX needed - get is Strongly consistent by default
+			// No TX needed - get is Strongly consistent by default, and no
+			// other threads increment or decrement this value in this
+			// code-base. However, even if future functionality changes make it
+			// so that this number is slightly out of date (i.e., the number of
+			// CounterShards is actually higher than what this function
+			// returns), then this is ok because this thread will use a
+			// pre-existing counterShard number (i.e., it's not possible to get
+			// a CounterShard number here that would be invalid). Note that this
+			// assumption would be invalid if we ever implement code that
+			// reduces the number of counter shards (e.g., via a composition job
+			// that reduces the shards and combines shard-counts into a single
+			// shard -- if, say, the traffic on this counter were to go way down
+			// and many shards aren't needed).
 			Counter counter = ObjectifyService.ofy().transactionless().load().key(counterKey).get();
 			if (counter != null)
 			{
@@ -670,12 +712,29 @@ public class ShardedCounterService implements CounterService
 	 */
 	private Optional<CounterShard> getCounterShardFromDS(String counterName, int shardNumber)
 	{
+		Key<CounterShard> counterShardKey = new CounterShard(counterName, shardNumber).getTypedKey();
+		return this.getCounterShardFromDS(counterShardKey);
+	}
+
+	/**
+	 * Helper function to get a named {@link Counter} from the Datastore.
+	 * 
+	 * @param counterName
+	 * @param shardNumber
+	 * @return
+	 */
+	private Optional<CounterShard> getCounterShardFromDS(Key<CounterShard> counterShardKey)
+	{
 		CounterShard counterShard = null;
 		try
 		{
-			Key<CounterShard> counterShardKey = new CounterShard(counterName, shardNumber).getTypedKey();
-			// No TX needed - get is Strongly consistent by default
-			counterShard = ObjectifyService.ofy().transactionless().load().key(counterShardKey).get();
+			// Transactional Get is required here because the TX doesn't
+			// actually start until the Datastore is hit. Thus, it's possible
+			// for two threads to get the same counterShard and increment it
+			// once yielding an invalid count unless this load is done in the
+			// existing transaction, if any (Without a TX here, a second tx
+			// commit would overwrite the first).
+			counterShard = ObjectifyService.ofy().load().key(counterShardKey).get();
 		}
 		catch (RuntimeException re)
 		{
@@ -695,6 +754,25 @@ public class ShardedCounterService implements CounterService
 	private String assembleCounterKeyforMemcache(String counterName)
 	{
 		return counterName;
+	}
+
+	/**
+	 * Internal unchecked exception thrown when a particular counter shard is
+	 * unable to decrement because its count is already zero. This exception is
+	 * unchecked because to operate properly inside of the Objectify
+	 * {@link Work} interface.
+	 * 
+	 * @author David Fuelling <sappenin@gmail.com>
+	 * 
+	 */
+	private static final class NonViableDecrementException extends RuntimeException
+	{
+		private static final long serialVersionUID = -2578731596507267699L;
+
+		public NonViableDecrementException(String message)
+		{
+			super(message);
+		}
 	}
 
 }

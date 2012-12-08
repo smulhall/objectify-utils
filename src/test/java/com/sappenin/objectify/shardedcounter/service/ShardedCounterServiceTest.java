@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.Before;
@@ -51,6 +52,8 @@ import com.sappenin.objectify.translate.UTCReadableInstantTranslatorFactory;
  */
 public class ShardedCounterServiceTest extends BaseObjectifyTest
 {
+	private static final Logger logger = Logger.getLogger(ShardedCounterServiceTest.class.getName());
+
 	private static final String DELETE_COUNTER_SHARD_QUEUE_NAME = "deleteCounterShardQueue";
 	private static final String TEST_COUNTER1 = "test-counter1";
 	private static final String TEST_COUNTER2 = "test-counter2";
@@ -214,12 +217,26 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 		assertNotNull(counter2.getTypedKey());
 	}
 
-	@Test(expected = RuntimeException.class)
 	public void testCreateCounter_AlreadyExists()
 	{
 		Counter counter1 = shardedCounterService.create(TEST_COUNTER1);
 		assertNotNull(counter1);
 		assertNotNull(counter1.getTypedKey());
+
+		// Second create should be fine unless the counter is being deleted.
+		counter1 = shardedCounterService.create(TEST_COUNTER1);
+		assertNotNull(counter1);
+		assertNotNull(counter1.getTypedKey());
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testCreateCounter_AlreadyExists_Deleting()
+	{
+		Counter counter1 = shardedCounterService.create(TEST_COUNTER1);
+		assertNotNull(counter1);
+		assertNotNull(counter1.getTypedKey());
+		counter1.setCounterStatus(CounterStatus.DELETING);
+		ObjectifyService.ofy().save().entity(counter1).now();
 
 		counter1 = shardedCounterService.create(TEST_COUNTER1);
 	}
@@ -379,7 +396,9 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 		// Decrement 20
 		for (int i = 0; i < 10; i++)
 		{
+			logger.info("Decrement #" + i + " of 9 for counter 1");
 			shardedCounterService.decrement(TEST_COUNTER1);
+			logger.info("Decrement #" + i + " of 9 for counter 2");
 			shardedCounterService.decrement(TEST_COUNTER2);
 		}
 
