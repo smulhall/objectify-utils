@@ -40,7 +40,7 @@ Maven users should utilize the following repository and dependency instead:
     <dependency>
     	<groupId>com.sappenin.objectify</groupId>
 		<artifactId>objectify-utils</artifactId>
-		<version>2.0.0</version>
+		<version>2.1.0</version>
     </dependency>
 
 Next, be sure to register any annotations that you plan to use, as follows:
