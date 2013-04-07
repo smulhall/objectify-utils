@@ -24,8 +24,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
-import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.cache.AsyncCacheFilter;
+import com.googlecode.objectify.ObjectifyFilter;
 
 /**
  * All tests should extend this class to set up the GAE environment.
@@ -38,6 +37,7 @@ import com.googlecode.objectify.cache.AsyncCacheFilter;
  */
 public class BaseObjectifyTest
 {
+
 	protected LocalServiceTestHelper helper = new LocalServiceTestHelper(
 		// Our tests assume strong consistency, but a bug in the appengine test
 		// harness forces us to set this value to at least 1.
@@ -57,8 +57,10 @@ public class BaseObjectifyTest
 	@After
 	public void tearDown()
 	{
-		AsyncCacheFilter.complete();
-		ObjectifyService.reset();
+		// This is normally done in ObjectifyFilter but that doesn't exist for
+		// tests
+		ObjectifyFilter.complete();
+
 		this.helper.tearDown();
 	}
 

@@ -87,8 +87,9 @@ public abstract class AbstractEntity
 		}
 		else
 		{
-			return ObjectifyService.factory().getKey(this);
-			// return Key.<T> create(getParentKey(), getClass(), this.getId());
+			com.google.appengine.api.datastore.Key rawKey = ObjectifyService.factory().getMetadataForEntity(this)
+				.getKeyMetadata().getRawKey(this);
+			return Key.create(rawKey);
 		}
 	}
 

@@ -121,7 +121,6 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 	@After
 	public void tearDown()
 	{
-		ObjectifyService.ofy().clear();
 		super.tearDown();
 	}
 
