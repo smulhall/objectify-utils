@@ -26,7 +26,7 @@ Allow for high-throughput counters backed by the HRD datastore.  Read more under
 Getting Started
 ----------
 
-First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/2.0.0.zip">objectify-utils-2.0.0.jar</a> and include it your application's classpath.
+First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/2.1.0.zip">objectify-utils-2.1.0.jar</a> and include it your application's classpath.
 
 Maven users should utilize the following repository and dependency instead:
 
