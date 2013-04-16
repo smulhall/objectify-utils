@@ -19,7 +19,7 @@ handles loading and saving of any property with type <a href="http://joda-time.s
 Store entities with Joda-Money properties in interesting ways, fully controllable via field annotations.  Read more under <a href="https://github.com/sappenin/objectify-utils/blob/master/README-Translators.md">Enhanced Translators</a>.
 
 + <b>High Throughput ShardedCounter Implementation</b><br/>
-Allow for high-throughput counters backed by the HRD datastore.  Read more under <a href="https://github.com/sappenin/objectify-utils/blob/master/README-ShardedCounters.md">ShardedCounter Service</a>.
+Allow for high-throughput counters backed by the HRD datastore.  Read more under <a href="https://github.com/sappenin/objectify-utils/blob/master/README-ShardedCounter.md">ShardedCounter Service</a>.
 
 <b><i><u>Note: This library is not compatible with Objectify versions prior to version 4.0b1.</u></i></b>
 
