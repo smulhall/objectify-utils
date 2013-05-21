@@ -73,8 +73,8 @@ public class UTCReadableInstantTranslatorFactoryTest extends TestBase
 	@Test
 	public void testDateTimeUTCConverter() throws Exception
 	{
-		ObjectifyService.ofy().getFactory().getTranslators().add(new UTCReadableInstantTranslatorFactory());
-		ObjectifyService.ofy().getFactory().register(HasReadableInstant.class);
+		ObjectifyService.ofy().factory().getTranslators().add(new UTCReadableInstantTranslatorFactory());
+		ObjectifyService.ofy().factory().register(HasReadableInstant.class);
 
 		HasReadableInstant hri = new HasReadableInstant();
 		hri.now = DateTime.now(DateTimeZone.UTC);

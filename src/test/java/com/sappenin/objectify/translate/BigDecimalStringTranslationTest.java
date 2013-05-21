@@ -74,8 +74,8 @@ public class BigDecimalStringTranslationTest extends TestBase
 	@Test
 	public void testBigDecimalStringConverter() throws Exception
 	{
-		ObjectifyService.ofy().getFactory().getTranslators().add(new BigDecimalStringTranslatorFactory());
-		ObjectifyService.ofy().getFactory().register(HasBigDecimal.class);
+		ObjectifyService.ofy().factory().getTranslators().add(new BigDecimalStringTranslatorFactory());
+		ObjectifyService.ofy().factory().register(HasBigDecimal.class);
 
 		HasBigDecimal hbd = new HasBigDecimal();
 		hbd.bigDecimalAmount = new BigDecimal("32.25");
@@ -115,8 +115,8 @@ public class BigDecimalStringTranslationTest extends TestBase
 	@Test
 	public void testBigDecimalStringConverterUsingIntConstructor() throws Exception
 	{
-		ObjectifyService.ofy().getFactory().getTranslators().add(new BigDecimalStringTranslatorFactory());
-		ObjectifyService.ofy().getFactory().register(HasBigDecimal.class);
+		ObjectifyService.ofy().factory().getTranslators().add(new BigDecimalStringTranslatorFactory());
+		ObjectifyService.ofy().factory().register(HasBigDecimal.class);
 
 		HasBigDecimal hbd = new HasBigDecimal();
 		hbd.bigDecimalAmount = new BigDecimal(3225);

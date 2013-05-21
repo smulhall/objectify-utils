@@ -75,8 +75,8 @@ public class BigMoneyTranslationTest extends TestBase
 	public void testBigMoneyConverter() throws Exception
 	{
 		// fact.getTranslators().add(new BigDecimalStringTranslatorFactory());
-		ObjectifyService.ofy().getFactory().getTranslators().add(new JodaMoneyTranslatorFactory());
-		ObjectifyService.ofy().getFactory().register(HasBigMoney.class);
+		ObjectifyService.ofy().factory().getTranslators().add(new JodaMoneyTranslatorFactory());
+		ObjectifyService.ofy().factory().register(HasBigMoney.class);
 
 		HasBigMoney hbm = new HasBigMoney();
 		hbm.moneyAmount = org.joda.money.Money.of(CurrencyUnit.USD, new BigDecimal("32.25"));

@@ -172,7 +172,7 @@ public class ShardedCounterService implements CounterService
 				// should be benign unless the counter is in the "DELETING"
 				// phase. In that case, an exception should be
 				// thrown
-				Counter dsCounter = ObjectifyService.ofy().load().key(counterKey).get();
+				Counter dsCounter = ObjectifyService.ofy().load().key(counterKey).now();
 				if (dsCounter != null && dsCounter.getCounterStatus() == CounterStatus.DELETING)
 				{
 					// We throw this exception because a particular counter may
@@ -196,7 +196,7 @@ public class ShardedCounterService implements CounterService
 		long count = this.getCountFromCacheOrDatastore(counterName);
 		Key<Counter> counterKey = new Counter(counterName, 1).getTypedKey();
 		// No TX needed - get is Strongly consistent by default
-		Counter counter = ObjectifyService.ofy().transactionless().load().key(counterKey).get();
+		Counter counter = ObjectifyService.ofy().transactionless().load().key(counterKey).now();
 		if (counter != null)
 		{
 			counter.setApproximateCount(count);
@@ -635,7 +635,7 @@ public class ShardedCounterService implements CounterService
 
 		Key<Counter> counterKey = new Counter(counterName, 1).getTypedKey();
 		// No TX needed - get is Strongly consistent by default
-		Counter counter = ObjectifyService.ofy().transactionless().load().key(counterKey).get();
+		Counter counter = ObjectifyService.ofy().transactionless().load().key(counterKey).now();
 		if (counter == null)
 		{
 			logger.severe("The counter named \"" + counterName
@@ -648,7 +648,7 @@ public class ShardedCounterService implements CounterService
 		{
 			Key<CounterShard> counterShardKey = new CounterShard(counterName, i).getTypedKey();
 			// No TX needed - get is Strongly consistent by default
-			CounterShard counterShard = ObjectifyService.ofy().transactionless().load().key(counterShardKey).get();
+			CounterShard counterShard = ObjectifyService.ofy().transactionless().load().key(counterShardKey).now();
 			if (counterShard != null)
 			{
 				sum += counterShard.getCount();
@@ -686,7 +686,7 @@ public class ShardedCounterService implements CounterService
 			// that reduces the shards and combines shard-counts into a single
 			// shard -- if, say, the traffic on this counter were to go way down
 			// and many shards aren't needed).
-			Counter counter = ObjectifyService.ofy().transactionless().load().key(counterKey).get();
+			Counter counter = ObjectifyService.ofy().transactionless().load().key(counterKey).now();
 			if (counter != null)
 			{
 				int shardCount = counter.getNumShards();
@@ -734,7 +734,7 @@ public class ShardedCounterService implements CounterService
 			// once yielding an invalid count unless this load is done in the
 			// existing transaction, if any (Without a TX here, a second tx
 			// commit would overwrite the first).
-			counterShard = ObjectifyService.ofy().load().key(counterShardKey).get();
+			counterShard = ObjectifyService.ofy().load().key(counterShardKey).now();
 		}
 		catch (RuntimeException re)
 		{

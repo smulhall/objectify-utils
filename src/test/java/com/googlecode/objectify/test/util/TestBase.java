@@ -89,7 +89,7 @@ public class TestBase
 
 		ObjectifyService.ofy().clear();
 
-		return ObjectifyService.ofy().load().key(key).get();
+		return ObjectifyService.ofy().load().key(key).now();
 	}
 
 	/** Get a DatastoreService */

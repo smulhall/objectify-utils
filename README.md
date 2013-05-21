@@ -6,7 +6,7 @@ Objectify-Utils contain various utility and extension classes to augment <a href
 Table of Contents
 -------
 + <a href="https://github.com/sappenin/objectify-utils/blob/master/README-Translators.md">Enhanced Translators</a>
-+  <a href="https://github.com/sappenin/objectify-utils/blob/master/README-ShardedCounter.md">ShardedCounter Service</a>
++ <a href="https://github.com/sappenin/objectify-utils/blob/master/README-ShardedCounter.md">ShardedCounter Service</a>
 
 Features
 ------
@@ -21,12 +21,12 @@ Store entities with Joda-Money properties in interesting ways, fully controllabl
 + <b>High Throughput ShardedCounter Implementation</b><br/>
 Allow for high-throughput counters backed by the HRD datastore.  Read more under <a href="https://github.com/sappenin/objectify-utils/blob/master/README-ShardedCounter.md">ShardedCounter Service</a>.
 
-<b><i><u>Note: This library is not compatible with Objectify versions prior to version 4.0b1.</u></i></b>
+<b><i><u>Note: The current release of this library is not compatible with Objectify versions prior to version 4.0rc1.  See the changelog for previous version support.</u></i></b>
 
 Getting Started
 ----------
 
-First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/2.1.0.zip">objectify-utils-2.1.0.jar</a> and include it your application's classpath.
+First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/2.2.0.zip">objectify-utils-2.2.0.jar</a> and include it your application's classpath.
 
 Maven users should utilize the following repository and dependency instead:
 
@@ -40,7 +40,7 @@ Maven users should utilize the following repository and dependency instead:
     <dependency>
     	<groupId>com.sappenin.objectify</groupId>
 		<artifactId>objectify-utils</artifactId>
-		<version>2.1.0</version>
+		<version>2.2.0</version>
     </dependency>
 
 Next, be sure to register any annotations that you plan to use, as follows:
@@ -48,7 +48,24 @@ Next, be sure to register any annotations that you plan to use, as follows:
 	ObjectifyService.factory().getTranslators().add(new BigDecimalStringTranslatorFactory());
 	ObjectifyService.factory().getTranslators().add(new JodaMoneyTranslatorFactory());
 	ObjectifyService.factory().getTranslators().add(new UTCReadableInstantTranslatorFactory());
-    
+
+Change Log
+----------
+**Version 2.2.0**
++ Updated to Appengine: 1.8.0 (provided)
++ Updated to Objectify: 4.0rc1 (provided)
++ Now compiled with Java 7
+
+**Version 2.1.0**
++ Updated to Appengine: 1.7.6 (provided)
++ Updated to Objectify: 4.0b2 (provided)
++ Updated to Joda Time: 2.2
++ Updated to Joda Money: 0.8
++ Updated to Guava: 14.0.1
+
+**Version 2.0.0**
++ Updated to Objectify 4.0
+
 Authors
 -------
 
@@ -62,7 +79,7 @@ Authors
 Copyright and License
 ---------------------
 
-Copyright 2012 Sappenin Inc.
+Copyright 2013 Sappenin Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -836,7 +836,7 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 			// ObjectifyService.ofy().load().type(CounterShard.class).list();
 
 			Key<CounterShard> shardKey = Key.create(CounterShard.class, counterName + "-" + i);
-			CounterShard counterShard = ObjectifyService.ofy().load().key(shardKey).get();
+			CounterShard counterShard = ObjectifyService.ofy().load().key(shardKey).now();
 			assertNotNull(counterShard);
 		}
 
@@ -844,7 +844,7 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 		{
 			// Assert that no counterShards exists
 			Key<CounterShard> shardKey = Key.create(CounterShard.class, counterName + "-" + numCounterShardsToGet);
-			CounterShard counterShard = ObjectifyService.ofy().load().key(shardKey).get();
+			CounterShard counterShard = ObjectifyService.ofy().load().key(shardKey).now();
 			assertTrue(counterShard == null);
 		}
 		else
@@ -852,7 +852,7 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 			// Assert that no more shards exist for this counterShard starting
 			// at {@code numCounterShardsToGet}
 			Key<CounterShard> shardKey = Key.create(CounterShard.class, counterName + "-" + numCounterShardsToGet);
-			CounterShard counterShard = ObjectifyService.ofy().load().key(shardKey).get();
+			CounterShard counterShard = ObjectifyService.ofy().load().key(shardKey).now();
 			assertTrue(counterShard == null);
 		}
 	}
