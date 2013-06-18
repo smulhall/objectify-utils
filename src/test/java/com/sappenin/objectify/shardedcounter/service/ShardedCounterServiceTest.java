@@ -159,9 +159,9 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 	@Test
 	public void testShardedCounterServiceConstructor_NoRelativeUrlPath()
 	{
-		ShardedCounterServiceConfiguration.Builder builder = new ShardedCounterServiceConfiguration.Builder();
-		builder.withDeleteCounterShardQueueName(DELETE_COUNTER_SHARD_QUEUE_NAME);
-		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration(builder);
+		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration.Builder()
+			.withDeleteCounterShardQueueName(DELETE_COUNTER_SHARD_QUEUE_NAME).build();
+
 		shardedCounterService = new ShardedCounterService(memcache, config);
 
 		Optional<Counter> optCounter = shardedCounterService.getCounter(TEST_COUNTER1);
@@ -171,11 +171,10 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 	@Test
 	public void testShardedCounterServiceConstructorFull()
 	{
-		ShardedCounterServiceConfiguration.Builder builder = new ShardedCounterServiceConfiguration.Builder();
+		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration.Builder()
+			.withDeleteCounterShardQueueName(DELETE_COUNTER_SHARD_QUEUE_NAME).withNumInitialShards(10)
+			.withRelativeUrlPathForDeleteTaskQueue("RELATIVE-URL-PATH-FOR-DELETE-QUEUE").build();
 
-		builder.withDeleteCounterShardQueueName(DELETE_COUNTER_SHARD_QUEUE_NAME).withNumInitialShards(10)
-			.withRelativeUrlPathForDeleteTaskQueue("RELATIVE-URL-PATH-FOR-DELETE-QUEUE");
-		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration(builder);
 		shardedCounterService = new ShardedCounterService(memcache, config);
 
 		Optional<Counter> optCounter = shardedCounterService.getCounter(TEST_COUNTER1);
@@ -464,9 +463,9 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 	@Test
 	public void testDeleteCounterWith_NonDefaultQueue() throws InterruptedException
 	{
-		ShardedCounterServiceConfiguration.Builder builder = new ShardedCounterServiceConfiguration.Builder();
-		builder.withDeleteCounterShardQueueName(DELETE_COUNTER_SHARD_QUEUE_NAME);
-		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration(builder);
+		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration.Builder()
+			.withDeleteCounterShardQueueName(DELETE_COUNTER_SHARD_QUEUE_NAME).build();
+
 		shardedCounterService = new ShardedCounterService(memcache, config);
 
 		shardedCounterService.create(TEST_COUNTER1);
@@ -477,10 +476,9 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 	@Test
 	public void testDeleteCounterWith_NonDefaultQueueAndNonDefaultPath() throws InterruptedException
 	{
-		ShardedCounterServiceConfiguration.Builder builder = new ShardedCounterServiceConfiguration.Builder();
-		builder.withDeleteCounterShardQueueName(DELETE_COUNTER_SHARD_QUEUE_NAME);
-		builder.withRelativeUrlPathForDeleteTaskQueue("/coolpath");
-		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration(builder);
+		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration.Builder()
+			.withDeleteCounterShardQueueName(DELETE_COUNTER_SHARD_QUEUE_NAME)
+			.withRelativeUrlPathForDeleteTaskQueue("/coolpath").build();
 		shardedCounterService = new ShardedCounterService(memcache, config);
 
 		shardedCounterService.create(TEST_COUNTER1);
@@ -765,9 +763,8 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 	 */
 	private CounterService initialShardedCounterService(int numInitialShards)
 	{
-		ShardedCounterServiceConfiguration.Builder builder = new ShardedCounterServiceConfiguration.Builder();
-		builder.withNumInitialShards(numInitialShards);
-		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration(builder);
+		ShardedCounterServiceConfiguration config = new ShardedCounterServiceConfiguration.Builder()
+			.withNumInitialShards(numInitialShards).build();
 
 		ShardedCounterService service = new ShardedCounterService(memcache, config);
 		return service;

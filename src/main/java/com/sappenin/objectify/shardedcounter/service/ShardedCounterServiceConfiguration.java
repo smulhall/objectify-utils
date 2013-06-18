@@ -52,11 +52,12 @@ public class ShardedCounterServiceConfiguration
 
 	/**
 	 * The default constructor for building a ShardedCounterService
-	 * configuration class.
+	 * configuration class. Private so that only the builder can build this
+	 * class.
 	 * 
 	 * @param builder
 	 */
-	public ShardedCounterServiceConfiguration(Builder builder)
+	private ShardedCounterServiceConfiguration(Builder builder)
 	{
 		Preconditions.checkNotNull(builder);
 		this.numInitialShards = builder.numInitialShards;
@@ -121,6 +122,16 @@ public class ShardedCounterServiceConfiguration
 		{
 			this.relativeUrlPathForDeleteTaskQueue = relativeUrlPathForDeleteTaskQueue;
 			return this;
+		}
+
+		/**
+		 * Method to build a new {@link ShardedCounterServiceConfiguration}.
+		 * 
+		 * @return
+		 */
+		public ShardedCounterServiceConfiguration build()
+		{
+			return new ShardedCounterServiceConfiguration(this);
 		}
 
 	}

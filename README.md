@@ -26,7 +26,7 @@ Allow for high-throughput counters backed by the HRD datastore.  Read more under
 Getting Started
 ----------
 
-First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/2.2.0.zip">objectify-utils-2.2.0.jar</a> and include it your application's classpath.
+First, download the latest <a href="https://github.com/sappenin/objectify-utils/archive/2.2.1.zip">objectify-utils-2.2.1.jar</a> and include it your application's classpath.
 
 Maven users should utilize the following repository and dependency instead:
 
@@ -40,7 +40,7 @@ Maven users should utilize the following repository and dependency instead:
     <dependency>
     	<groupId>com.sappenin.objectify</groupId>
 		<artifactId>objectify-utils</artifactId>
-		<version>2.2.0</version>
+		<version>2.2.1</version>
     </dependency>
 
 Next, be sure to register any annotations that you plan to use, as follows:
@@ -51,6 +51,10 @@ Next, be sure to register any annotations that you plan to use, as follows:
 
 Change Log
 ----------
+**Version 2.2.1**
++ Added missing #build to ShardedCounterServiceConfiguration.Builder
++ Updated to Appengine: 1.8.1 (provided)
+
 **Version 2.2.0**
 + Updated to Appengine: 1.8.0 (provided)
 + Updated to Objectify: 4.0rc1 (provided)
