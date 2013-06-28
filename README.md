@@ -1,5 +1,6 @@
 Objectify-Utils (Objectify Utilities for Google Appengine)
 ===========================
+[![Build Status](https://travis-ci.org/sappenin/objectify-utils.png)](https://travis-ci.org/sappenin/objectify-utils)
 
 Objectify-Utils contain various utility and extension classes to augment <a href="http://code.google.com/p/objectify-appengine">Objectify 4</a>.  This library includes Objectify Translators for enhanced handling of large numbers, Joda-Money, and Joda-Time types.  In addition, it includes a ShardedCounter implementation for high-throughput+consistent counters backed by the GAE Datastore.
 
