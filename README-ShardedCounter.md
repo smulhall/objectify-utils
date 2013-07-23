@@ -146,15 +146,26 @@ To utilize the a default configuration of the <b>ShardedCounterService</b> with 
 
 Default Guice Setup without Annotations
 -------
-To utilize the a default configuration of the <b>ShardedCounterService</b> with Guice without using Guice Annotations, add the following methods to the configure() method of one of your Guice modules:
+To utilize the default configuration of <b>ShardedCounterService</b> with Guice (without using Guice Annotations), add the following classes to your project to create Providers for the ShardedCounterServiceConfiguration, MemcacheService, and ShardedCounterService:	
 
-	// The entire app can have a single ShardedCounterServiceConfiguration, though making
-	// this request-scoped would allow the config to vary per-request
-	bind(MemcacheService.class).toProvider(MemcacheServiceProvider.class).in(RequestScoped.class);
-	bind(ShardedCounterServiceConfiguration.class).toProvider(ShardedCounterServiceConfigurationProvider.class);
-	bind(ShardedCounterService.class).toProvider(ShardedCounterServiceProvider.class).in(RequestScoped.class);
+	public class MemcacheServiceProvider implements Provider<MemcacheService>
+	{
+		@Override
+		public ShardedCounterService get()
+		{
+			return MemcacheServiceFactory.getMemcacheService();
+		}
+	}
 
-Finally, create a Provider for the ShardedCounterService and MemcacheService:
+	public class ShardedCounterServiceConfigurationProvider implements
+			Provider<ShardedCounterServiceConfiguration>
+	{
+		@Override
+		public ShardedCounterServiceConfiguration get()
+		{
+			return new ShardedCounterServiceConfiguration.Builder().withNumInitialShards(2).build();
+		}
+	}
 
 	public class ShardedCounterServiceProvider implements Provider<ShardedCounterService>
 	{
@@ -182,14 +193,14 @@ Finally, create a Provider for the ShardedCounterService and MemcacheService:
 		}
 	}
 
-	public class MemcacheServiceProvider implements Provider<MemcacheService>
-	{
-		@Override
-		public ShardedCounterService get()
-		{
-			return MemcacheServiceFactory.getMemcacheService();
-		}
-	}
+Finally, wire everything together in the configure() method of one of your Guice modules:
+
+	bind(MemcacheService.class).toProvider(MemcacheServiceProvider.class).in(RequestScoped.class);
+	// The entire app can have a single ShardedCounterServiceConfiguration, though making
+	// this request-scoped would allow the config to vary per-request
+	bind(ShardedCounterServiceConfiguration.class).toProvider(ShardedCounterServiceConfigurationProvider.class);
+	bind(ShardedCounterService.class).toProvider(ShardedCounterServiceProvider.class).in(RequestScoped.class);
+	
 	
 
 Copyright and License
