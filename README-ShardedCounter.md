@@ -120,7 +120,7 @@ To utilize the a default configuration of the <b>ShardedCounterService</b> with 
 	@RequestScoped
 	public MemcacheService provideMemcacheService()
 	{
-		return MemcacheServiceFactory.getMemcacheService(NamespaceManager.get());
+		return MemcacheServiceFactory.getMemcacheService();
 	}
 
 	// The entire app can have a single ShardedCounterServiceConfiguration, though making
@@ -187,7 +187,7 @@ Finally, create a Provider for the ShardedCounterService and MemcacheService:
 		@Override
 		public ShardedCounterService get()
 		{
-			return MemcacheServiceFactory.getMemcacheService(NamespaceManager.get());
+			return MemcacheServiceFactory.getMemcacheService();
 		}
 	}
 	
