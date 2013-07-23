@@ -20,6 +20,8 @@ Getting Started
 ----------
 Sharded counters can be accessed via an implementation of <a href="">CounterService</a>.  Currently, the only implementation is <a href="">ShardedCounterService<a/>, which requires a TaskQueue (the "/default" queue is used by default) if Counter deletion is required.
 
+Please see below for confiugration examples using Spring and Guice, respectively.
+
 Queue Configuration
 ----------
  	<queue-entries>
@@ -107,7 +109,7 @@ Finally, use the configuration defined above to create a <b>ShardedCounterServic
 
 Default Guice Setup using Guice Annotations
 -------
-To utilize the a default configuration of the <b>ShardedCounterService</b> with Guice, add the following methods one of your Guice modules:
+To utilize the a default configuration of the <b>ShardedCounterService</b> with Guice, add the following methods to one of your Guice modules:
 
 	@Provides
 	@RequestScoped
@@ -250,7 +252,7 @@ Finally, wire everything together in the configure() method of one of your Guice
 Copyright and License
 ---------------------
 
-Copyright 2012 Sappenin Inc.
+Copyright 2013 Sappenin Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
