@@ -105,7 +105,7 @@ Finally, use the configuration defined above to create a <b>ShardedCounterServic
 
 
 
-Default Guice Setup via Annotations
+Default Guice Setup using Guice Annotations
 -------
 To utilize the a default configuration of the <b>ShardedCounterService</b> with Guice, add the following methods one of your Guice modules:
 
@@ -143,6 +143,50 @@ To utilize the a default configuration of the <b>ShardedCounterService</b> with 
 	{
 		return new ShardedCounterService(memcacheService, config);
 	}
+
+Don't forget to wire Objectify into Guice:
+
+	public class OfyFactory extends ObjectifyFactory
+	{
+		/** Register our entity types */
+		public OfyFactory()
+		{
+			final long registrationStartTime = System.currentTimeMillis();
+
+			// ///////////////////
+			// Translation Classes
+			// ///////////////////
+
+			final com.sappenin.objectify.translate.BigDecimalStringTranslatorFactory bigDecimalStringTranslatorFactory = new BigDecimalStringTranslatorFactory();
+			getTranslators().add(bigDecimalStringTranslatorFactory);
+
+			final com.sappenin.objectify.translate.JodaMoneyTranslatorFactory jodaMoneyTranslatorFactory = new JodaMoneyTranslatorFactory();
+			getTranslators().add(jodaMoneyTranslatorFactory);
+
+			final com.sappenin.objectify.translate.UTCReadableInstantTranslatorFactory utcReadableInstantTranslatorFactory = new UTCReadableInstantTranslatorFactory();
+			getTranslators().add(utcReadableInstantTranslatorFactory);
+
+			// ///////////////////
+			// Register Entities
+			// ///////////////////
+
+			// ShardedCounter Entities
+			register(Counter.class);
+			register(CounterShard.class);
+
+			OfyFactory.logger.info("Objectify Class Registration took "
+				+ (System.currentTimeMillis() - registrationStartTime) + " millis");
+		}
+
+		@Override
+		public Ofy begin()
+		{
+			return new Ofy(this);
+		}
+	}
+
+For a more complete example of wiring Guice and Objectify, see the <a href="https://github.com/stickfigure/motomapia">Motomapia Source</a>. 
+
 
 Default Guice Setup without Annotations
 -------
