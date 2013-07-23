@@ -105,10 +105,92 @@ Finally, use the configuration defined above to create a <b>ShardedCounterServic
 
 
 
-Setup using Guice
+Default Guice Setup via Annotations
 -------
-TBD
+To utilize the a default configuration of the <b>ShardedCounterService</b> with Guice, add the following methods one of your Guice modules:
 
+	@Provides
+	@RequestScoped
+	public Ofy provideOfy(OfyFactory fact)
+	{
+		return fact.begin();
+	}
+
+	@Provides
+	@RequestScoped
+	public MemcacheService provideMemcacheService()
+	{
+		return MemcacheServiceFactory.getMemcacheService(NamespaceManager.get());
+	}
+
+	// The entire app can have a single ShardedCounterServiceConfiguration, though making
+	// this request-scoped would allow the config to vary per-request
+	@Provides
+	@Singleton
+	public ShardedCounterServiceConfiguration provideShardedCounterServiceCoonfiguration(OfyFactory ofyFactory,
+			MemcacheService memcacheService)
+	{
+		return new ShardedCounterServiceConfiguration.Builder().withNumInitialShards(2).build();
+	}
+
+	// Be safe and make this RequestScoped though not technically needed to be RequestScoped 
+	// since ShardedCounterServiceConfiguration and MemcacheService are immutable or utilize 
+	// thread-local internally.
+	@Provides
+	@RequestScoped
+	public ShardedCounterService provideShardedCounterService(MemcacheService memcacheService,
+			ShardedCounterServiceConfiguration config)
+	{
+		return new ShardedCounterService(memcacheService, config);
+	}
+
+Default Guice Setup without Annotations
+-------
+To utilize the a default configuration of the <b>ShardedCounterService</b> with Guice without using Guice Annotations, add the following methods to the configure() method of one of your Guice modules:
+
+	// The entire app can have a single ShardedCounterServiceConfiguration, though making
+	// this request-scoped would allow the config to vary per-request
+	bind(MemcacheService.class).toProvider(MemcacheServiceProvider.class).in(RequestScoped.class);
+	bind(ShardedCounterServiceConfiguration.class).toProvider(ShardedCounterServiceConfigurationProvider.class);
+	bind(ShardedCounterService.class).toProvider(ShardedCounterServiceProvider.class).in(RequestScoped.class);
+
+Finally, create a Provider for the ShardedCounterService and MemcacheService:
+
+	public class ShardedCounterServiceProvider implements Provider<ShardedCounterService>
+	{
+		private final ShardedCounterServiceConfiguration config;
+		private final MemcacheService memcacheService;
+
+		/**
+		 * Required-args Constructor.
+		 * 
+		 * @param config
+		 * @param memcacheService
+		 */
+		@Inject
+		public ShardedCounterServiceProvider(final ShardedCounterServiceConfiguration config,
+				final MemcacheService memcacheService)
+		{
+			this.config = config;
+			this.memcacheService = memcacheService;
+		}
+
+		@Override
+		public ShardedCounterService get()
+		{
+			return new ShardedCounterService(memcacheService, config);
+		}
+	}
+
+	public class MemcacheServiceProvider implements Provider<MemcacheService>
+	{
+		@Override
+		public ShardedCounterService get()
+		{
+			return MemcacheServiceFactory.getMemcacheService(NamespaceManager.get());
+		}
+	}
+	
 
 Copyright and License
 ---------------------
