@@ -21,16 +21,16 @@
  */
 package com.sappenin.objectify.shardedcounter.data;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
 import com.google.common.base.Preconditions;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.annotation.Unindex;
 import com.sappenin.objectify.shardedcounter.data.base.AbstractEntity;
+import lombok.Getter;
+import lombok.Setter;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  * Represents a discrete shard belonging to a named counter.<br/>
@@ -46,6 +46,8 @@ import com.sappenin.objectify.shardedcounter.data.base.AbstractEntity;
 @Unindex
 public class CounterShard extends AbstractEntity
 {
+    @Parent
+    protected Key<?> parent;
 	static final String COUNTER_SHARD_KEY_SEPARATOR = "-";
 
 	// The id of a CounterShard is the name of the counter (for easy lookup via
@@ -76,6 +78,7 @@ public class CounterShard extends AbstractEntity
 	{
 		Preconditions.checkNotNull(counterName);
 		setId(counterName + COUNTER_SHARD_KEY_SEPARATOR + shardNumber);
+        this.parent = Key.create(Counter.class, 1);
 	}
 
 	// /////////////////////////

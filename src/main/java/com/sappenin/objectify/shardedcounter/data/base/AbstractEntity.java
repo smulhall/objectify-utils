@@ -15,17 +15,15 @@
  */
 package com.sappenin.objectify.shardedcounter.data.base;
 
-import java.util.UUID;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.annotation.Id;
+import lombok.Getter;
+import lombok.Setter;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
+import java.util.UUID;
 
 /**
  * An abstract base class for all sappenin-objectify-utils entities (data stored

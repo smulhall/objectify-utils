@@ -21,13 +21,6 @@
  */
 package com.sappenin.objectify.shardedcounter.service;
 
-import java.util.ConcurrentModificationException;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheService.IdentifiableValue;
 import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
@@ -38,14 +31,16 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.googlecode.objectify.Key;
-import com.googlecode.objectify.Objectify;
-import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.VoidWork;
-import com.googlecode.objectify.Work;
+import com.googlecode.objectify.*;
 import com.sappenin.objectify.shardedcounter.data.Counter;
 import com.sappenin.objectify.shardedcounter.data.Counter.CounterStatus;
 import com.sappenin.objectify.shardedcounter.data.CounterShard;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ConcurrentModificationException;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of {@link CounterService} that is backed by one or more
@@ -196,7 +191,7 @@ public class ShardedCounterService implements CounterService
 		long count = this.getCountFromCacheOrDatastore(counterName);
 		Key<Counter> counterKey = new Counter(counterName, 1).getTypedKey();
 		// No TX needed - get is Strongly consistent by default
-		Counter counter = ObjectifyService.ofy().transactionless().load().key(counterKey).now();
+		Counter counter = ObjectifyService.ofy().load().key(counterKey).now();
 		if (counter != null)
 		{
 			counter.setApproximateCount(count);
@@ -213,6 +208,10 @@ public class ShardedCounterService implements CounterService
 		Preconditions.checkArgument(amount > 0, "Counter increments must be positive numbers!");
 
 		Optional<Counter> optCounter = this.getCounter(counterName);
+        if(!optCounter.isPresent()) {
+            Counter counter = this.create(counterName);
+            optCounter = Optional.fromNullable(counter);
+        }
 		counterPreconditionChecks(counterName, optCounter, "increment");
 
 		// ///////////

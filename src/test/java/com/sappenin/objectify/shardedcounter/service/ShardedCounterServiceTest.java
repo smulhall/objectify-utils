@@ -15,18 +15,6 @@
  */
 package com.sappenin.objectify.shardedcounter.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
@@ -44,6 +32,14 @@ import com.sappenin.objectify.shardedcounter.data.Counter;
 import com.sappenin.objectify.shardedcounter.data.Counter.CounterStatus;
 import com.sappenin.objectify.shardedcounter.data.CounterShard;
 import com.sappenin.objectify.translate.UTCReadableInstantTranslatorFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.*;
 
 /**
  * Test class for {@link ShardedCounterService}.
@@ -823,6 +819,7 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 	 */
 	private void assertAllCounterShardsExists(String counterName, int numCounterShardsToGet)
 	{
+        Key<Counter> parent = Key.create(Counter.class, 1);
 		for (int i = 0; i < numCounterShardsToGet; i++)
 		{
 			// The following command does a query, which is only eventually
@@ -832,7 +829,7 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 			// List<CounterShard> allCounterShards =
 			// ObjectifyService.ofy().load().type(CounterShard.class).list();
 
-			Key<CounterShard> shardKey = Key.create(CounterShard.class, counterName + "-" + i);
+			Key<CounterShard> shardKey = Key.create(parent, CounterShard.class, counterName + "-" + i);
 			CounterShard counterShard = ObjectifyService.ofy().load().key(shardKey).now();
 			assertNotNull(counterShard);
 		}
@@ -840,7 +837,7 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 		if (numCounterShardsToGet == 0)
 		{
 			// Assert that no counterShards exists
-			Key<CounterShard> shardKey = Key.create(CounterShard.class, counterName + "-" + numCounterShardsToGet);
+			Key<CounterShard> shardKey = Key.create(parent, CounterShard.class, counterName + "-" + numCounterShardsToGet);
 			CounterShard counterShard = ObjectifyService.ofy().load().key(shardKey).now();
 			assertTrue(counterShard == null);
 		}
@@ -848,7 +845,7 @@ public class ShardedCounterServiceTest extends BaseObjectifyTest
 		{
 			// Assert that no more shards exist for this counterShard starting
 			// at {@code numCounterShardsToGet}
-			Key<CounterShard> shardKey = Key.create(CounterShard.class, counterName + "-" + numCounterShardsToGet);
+			Key<CounterShard> shardKey = Key.create(parent, CounterShard.class, counterName + "-" + numCounterShardsToGet);
 			CounterShard counterShard = ObjectifyService.ofy().load().key(shardKey).now();
 			assertTrue(counterShard == null);
 		}

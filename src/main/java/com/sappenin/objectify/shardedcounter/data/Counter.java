@@ -21,6 +21,8 @@
  */
 package com.sappenin.objectify.shardedcounter.data;
 
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.annotation.Parent;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,6 +44,8 @@ import com.sappenin.objectify.shardedcounter.data.base.AbstractEntity;
 @Unindex
 public class Counter extends AbstractEntity
 {
+    @Parent
+    protected Key<?> parent;
 
 	// Used by the Get methods to indicate the state of a Counter while it is
 	// deleting.
@@ -88,6 +92,7 @@ public class Counter extends AbstractEntity
 	{
 		super(counterName);
 		this.numShards = numShards;
+        this.parent = Key.create(Counter.class, 1);
 	}
 
 	// //////////////////////////////
